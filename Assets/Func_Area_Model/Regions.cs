@@ -11,8 +11,10 @@ namespace Assets.Func_Area_Model
     {
         public string Abbreviation { get; set; }
         public string Region_Name { get; set; }
-        public Vector3 Region_Co_Ord { get; set; }
-        public enum Hemisphere { Right, Left }
-        public string Note;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+        public string Hemisphere { get; set; }
+        public string Note { get; set; }
     }
 }

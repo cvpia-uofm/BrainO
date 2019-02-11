@@ -1,4 +1,5 @@
 ﻿using Assets.Func_Area_Model;
+using ExcelFactoryLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ public class BrainController : MonoBehaviour
 
     private void LoadFunc_Area_Pos()
     {
-       
+        regions = ExcelFactory<Regions>.Map("..//Assets//Regions//desikan_atlas.csv");
     }
 
     // Start is called before the first frame update
