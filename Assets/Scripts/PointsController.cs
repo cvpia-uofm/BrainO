@@ -2,12 +2,14 @@
 using AutoMapperFactory;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PointsController : MonoBehaviour
 {
-    public GameObject Func_Area;
+    //public GameObject Func_Area;
     IEnumerable<Regions> regions;
+    
     // Start is called before the first frame update
     private void Awake()
     {
@@ -26,20 +28,33 @@ public class PointsController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        GenerateCo_Ord();
+        Plot();
     }
 
-    private void GenerateCo_Ord()
+    private void Plot()
     {
+        int i = 1;
         foreach (var region in regions)
         {
-            float X = (float)(region.X);
-            float Y = (float)(region.Y);
-            float Z = (float)(region.Z);
-            var pos = new Vector3(X, Y, Z);
-            Func_Area.transform.position = pos;
-            Instantiate(Func_Area, Func_Area.transform);
-            Func_Area.transform.SetParent(gameObject.Find("Points").transform);
+            if (i <= 2)
+            {
+                float X = (float)region.X;
+                float Y = (float)(region.Y);
+                float Z = (float)(region.Z);
+                var pos = new Vector3(X, Y, Z);
+                GameObject Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
+                //Instantiate(Func_Area, Func_Area.transform);
+                var canvas = Func_Area.transform.Find("Canvas");
+                var textobj = canvas.GetComponentInChildren<TMP_Text>();
+                textobj.text = region.Abbreviation;
+
+                Func_Area.transform.SetParent(this.transform);
+                Func_Area.transform.position = pos;
+                //i++;
+            }
+            else
+                break;
+            //Func_Area.transform.SetParent(gameObject.Find("Points").transform);
         }
     }
 }
