@@ -80,15 +80,16 @@ public class PointsController : MonoBehaviour
                 var pos = TransformR(inputVector, "X", 90);
                 pos = TransformR(pos, "Y", 180);
                 Func_Area.transform.position = new Vector3(pos[0,0],pos[1,0],pos[2,0]);
-                
+               
                 //i++;
             }
-            var c = new Vector3((float)3, (float)4, (float)5);
-            gameObject.transform.position = c;
+            
             //Func_Area.transform.SetParent(gameObject.Find("Points").transform);
         }
+        var c = new Vector3(0.8f, 1.8f, 1.2f);
+        gameObject.transform.localPosition = c;
     }
-    
+
     private Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)
     {
         angle = angle * Mathf.PI / 180;
