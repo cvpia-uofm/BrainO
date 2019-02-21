@@ -10,7 +10,11 @@ using AutoMapperFactory;
 
 public class BrainController : MonoBehaviour
 {
-    const float rotateSpeed = 200;
+    private const float rotateSpeed = 200;
+
+    public delegate void RotationAction(float X, float Y);
+    public static event RotationAction OnBrainRotate;
+
     private void Update()
     {
         Rotation();
@@ -46,6 +50,9 @@ public class BrainController : MonoBehaviour
 
             transform.Rotate(Vector3.up, -rotateX);
             transform.Rotate(Vector3.right, -rotateY);
+
+            OnBrainRotate(rotateX, rotateY);
+            
         }
     }
 }

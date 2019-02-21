@@ -2,6 +2,7 @@
 using AutoMapperFactory;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Complex;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,12 +12,12 @@ public class PointsController : MonoBehaviour
 {
     //public GameObject Func_Area;
     IEnumerable<Regions> regions;
-    const float rotateSpeed = 200;
     Matrix<float> rTheta;
-
+    List<TMP_Text> points;
     // Start is called before the first frame update
     private void Awake()
     {
+        points = new List<TMP_Text>();
         regions = new List<Regions>();
         LoadFunc_Area_Pos();
     }
@@ -32,22 +33,22 @@ public class PointsController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        BrainController.OnBrainRotate += RotateLabels;
         Plot();
     }
+
+    private void RotateLabels(float X, float Y)
+    {
+        foreach (var point in points)
+        {
+            point.transform.Rotate(Vector3.up, X);
+            point.transform.Rotate(Vector3.right, -Y);
+        }
+    }
+
     private void Update()
     {
-        //Rotation();
-    }
-    private void Rotation()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            float rotateX = Input.GetAxis("Mouse X") * rotateSpeed * Mathf.Deg2Rad;
-            float rotateY = Input.GetAxis("Mouse Y") * rotateSpeed * Mathf.Deg2Rad;
-
-            transform.Rotate(Vector3.up, -rotateX);
-            transform.Rotate(Vector3.right, -rotateY);
-        }
+        
     }
 
     private void Plot()
@@ -65,6 +66,7 @@ public class PointsController : MonoBehaviour
                 });
                 GameObject Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
                 Func_Area.name = region.Abbreviation;
+
                 //Instantiate(Func_Area, Func_Area.transform);
                 if (region.Hemisphere.Equals("left"))
                 {
@@ -75,6 +77,7 @@ public class PointsController : MonoBehaviour
                 var canvas = Func_Area.transform.Find("Canvas");
                 var textobj = canvas.GetComponentInChildren<TMP_Text>();
                 textobj.text = region.Abbreviation;
+                points.Add(textobj);
 
                 Func_Area.transform.SetParent(this.transform);
                 var pos = TransformR(inputVector, "X", 90);
@@ -86,7 +89,7 @@ public class PointsController : MonoBehaviour
             
             //Func_Area.transform.SetParent(gameObject.Find("Points").transform);
         }
-        var c = new Vector3(0.8f, 1.8f, 1.2f);
+        var c = new Vector3(0.8f, 1.8f, 1.48f);
         gameObject.transform.localPosition = c;
     }
 
