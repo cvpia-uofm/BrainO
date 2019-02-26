@@ -9,8 +9,8 @@ namespace Assets.Models
 {
     public class Corelation
     {
-        public string Point1 { get; set; }
-        public string Point2 { get; set; }
+        public string PointX { get; set; }
+        public string PointY { get; set; }
         public int Weight { get; set; }
     }
 }

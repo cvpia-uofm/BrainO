@@ -7,6 +7,7 @@ using System.IO;
 using System.Data;
 using UnityEngine;
 using AutoMapperFactory;
+using Assets.Models;
 
 public class BrainController : MonoBehaviour
 {
@@ -14,6 +15,13 @@ public class BrainController : MonoBehaviour
 
     public delegate void RotationAction(float X, float Y);
     public static event RotationAction OnBrainRotate;
+
+    private void Awake()
+    {
+       
+    }
+
+   
 
     private void Update()
     {

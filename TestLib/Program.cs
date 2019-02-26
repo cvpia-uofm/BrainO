@@ -1,5 +1,7 @@
 ﻿using Assets.Func_Area_Model;
+using Assets.Models;
 using AutoMapperFactory;
+using ExcelFactory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,13 +18,14 @@ namespace TestLib
         static void Main(string[] args)
         {
             
-            using (var reader = new StreamReader("..//..//..//Assets//Resources//Data.csv"))
+            using (var reader = new StreamReader(@"C:\Users\KAM\Desktop\CorrelationMatrix.csv"))
             {
 
                 data_1 = reader.ReadToEnd();
                 data = data_1.Split('\n');
             }
-            var regions = MapperFactory<Regions>.Map_CSV(data);
+            var regions = MapperFactory<Corelation>.Map_CSV(data,MapperEnums.Inputs.Correlations);
+
         }
     }
 }
