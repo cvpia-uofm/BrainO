@@ -16,13 +16,17 @@ public class PointsController : MonoBehaviour
     //public GameObject Func_Area;
     List<Regions> regions;
     Matrix<float> rTheta;
-    List<TMP_Text> points;
+    List<TMP_Text> pointLabels;
+    List<LineRenderer> lineObjects;
     // Start is called before the first frame update
     private void Awake()
     {
-        points = new List<TMP_Text>();
+        pointLabels = new List<TMP_Text>();
         regions = new List<Regions>();
+        lineObjects = new List<LineRenderer>();
+
         LoadFunc_Area_Pos();
+
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
     }
 
@@ -30,11 +34,16 @@ public class PointsController : MonoBehaviour
     {
         foreach(var cor in corelations)
         {
-            var pointX = regions.Where(a => a.Abbreviation == cor.PointX).SingleOrDefault();
-            var pointY = regions.Where(a => a.Abbreviation == cor.PointY).SingleOrDefault();
+            var p1 = GameObject.Find(cor.PointX);
+            var p2 = GameObject.Find(cor.PointY);
 
-            
+            var lineObj = new GameObject();
+            lineObj.name = cor.PointX + "_" + cor.PointY;
+            var lineR = lineObj.AddComponent<LineRenderer>();
+            lineR.useWorldSpace = true;
+            lineR.SetPositions(new Vector3[] { p1.transform.position, p2.transform.position });
 
+            lineObjects.Add(lineR);
         }
     }
 
@@ -49,24 +58,42 @@ public class PointsController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        BrainController.OnBrainRotate += RotateLabels;
+        BrainController.OnBrainRotate += RotateLabelsAndLines;
         Plot();
     }
 
-    private void RotateLabels(float X, float Y)
+    private void RotateLabelsAndLines(float X, float Y)
     {
-        foreach (var point in points)
+        foreach (var point in pointLabels)
         {
             point.transform.Rotate(Vector3.up, X);
             point.transform.Rotate(Vector3.right, -Y);
         }
-    }
 
-    private void Update()
-    {
-        
-    }
+        foreach(var lineobj in lineObjects)
+        {
+            var pos_begin = lineobj.GetPosition(0);
+            var pos_end = lineobj.GetPosition(1);
+            var mat_begin = Matrix<float>.Build.DenseOfArray(new float[,]
+            {
+                { pos_begin.x }, {pos_begin.y}, {pos_begin.y}, { 1 }
+            });
+            var mat_end = Matrix<float>.Build.DenseOfArray(new float[,]
+            {
+                { pos_end.x }, {pos_end.y}, {pos_end.y}, { 1 }
+            });
+            var T_mat_begin = TransformR(mat_begin, "X", X);
+            T_mat_begin = TransformR(T_mat_begin, "Y", -Y);
 
+            var T_mat_end = TransformR(mat_end, "X", X);
+            T_mat_end = TransformR(T_mat_end, "Y", -Y);
+
+
+            var new_pos_1 = new Vector3(T_mat_begin[0, 0], T_mat_begin[1, 0], T_mat_begin[2, 0]);
+            var new_pos_2 = new Vector3(T_mat_end[0, 0], T_mat_end[1, 0], T_mat_end[2, 0]);
+            lineobj.SetPositions(new Vector3[] { new_pos_1, new_pos_2 });
+        }
+    }
     private void Plot()
     {
         foreach (var region in regions)
@@ -90,7 +117,7 @@ public class PointsController : MonoBehaviour
             var canvas = Func_Area.transform.Find("Canvas");
             var textobj = canvas.GetComponentInChildren<TMP_Text>();
             textobj.text = region.Abbreviation;
-            points.Add(textobj);
+            pointLabels.Add(textobj);
 
             Func_Area.transform.SetParent(this.transform);
             var pos = TransformR(inputVector, "X", 90);
