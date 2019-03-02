@@ -15,36 +15,15 @@ public class PointsController : MonoBehaviour
 {
     //public GameObject Func_Area;
     List<Regions> regions;
-    Matrix<float> rTheta;
+    static Matrix<float> rTheta;
     List<TMP_Text> pointLabels;
-    List<LineRenderer> lineObjects;
     // Start is called before the first frame update
     private void Awake()
     {
         pointLabels = new List<TMP_Text>();
         regions = new List<Regions>();
-        lineObjects = new List<LineRenderer>();
 
         LoadFunc_Area_Pos();
-
-        SideMenuController.OnPlotCorrelation += PlotCorrelations;
-    }
-
-    private void PlotCorrelations(IEnumerable<Corelation> corelations)
-    {
-        foreach(var cor in corelations)
-        {
-            var p1 = GameObject.Find(cor.PointX);
-            var p2 = GameObject.Find(cor.PointY);
-
-            var lineObj = new GameObject();
-            lineObj.name = cor.PointX + "_" + cor.PointY;
-            var lineR = lineObj.AddComponent<LineRenderer>();
-            lineR.useWorldSpace = true;
-            lineR.SetPositions(new Vector3[] { p1.transform.position, p2.transform.position });
-
-            lineObjects.Add(lineR);
-        }
     }
 
     private void LoadFunc_Area_Pos()
@@ -58,11 +37,11 @@ public class PointsController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        BrainController.OnBrainRotate += RotateLabelsAndLines;
+        BrainController.OnBrainRotate += RotateLabels;
         Plot();
     }
 
-    private void RotateLabelsAndLines(float X, float Y)
+    private void RotateLabels(float X, float Y)
     {
         foreach (var point in pointLabels)
         {
@@ -70,30 +49,8 @@ public class PointsController : MonoBehaviour
             point.transform.Rotate(Vector3.right, -Y);
         }
 
-        foreach(var lineobj in lineObjects)
-        {
-            var pos_begin = lineobj.GetPosition(0);
-            var pos_end = lineobj.GetPosition(1);
-            var mat_begin = Matrix<float>.Build.DenseOfArray(new float[,]
-            {
-                { pos_begin.x }, {pos_begin.y}, {pos_begin.y}, { 1 }
-            });
-            var mat_end = Matrix<float>.Build.DenseOfArray(new float[,]
-            {
-                { pos_end.x }, {pos_end.y}, {pos_end.y}, { 1 }
-            });
-            var T_mat_begin = TransformR(mat_begin, "X", X);
-            T_mat_begin = TransformR(T_mat_begin, "Y", -Y);
-
-            var T_mat_end = TransformR(mat_end, "X", X);
-            T_mat_end = TransformR(T_mat_end, "Y", -Y);
-
-
-            var new_pos_1 = new Vector3(T_mat_begin[0, 0], T_mat_begin[1, 0], T_mat_begin[2, 0]);
-            var new_pos_2 = new Vector3(T_mat_end[0, 0], T_mat_end[1, 0], T_mat_end[2, 0]);
-            lineobj.SetPositions(new Vector3[] { new_pos_1, new_pos_2 });
-        }
     }
+
     private void Plot()
     {
         foreach (var region in regions)
@@ -106,7 +63,7 @@ public class PointsController : MonoBehaviour
             });
             GameObject Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
             Func_Area.name = region.Abbreviation;
-
+            Func_Area.tag = "Point";
             //Instantiate(Func_Area, Func_Area.transform);
             if (region.Hemisphere.Equals("left"))
             {
@@ -130,7 +87,7 @@ public class PointsController : MonoBehaviour
         gameObject.transform.localPosition = c;
     }
 
-    private Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)
+    public static Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)
     {
         angle = angle * Mathf.PI / 180;
 

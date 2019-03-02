@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Left_Hemp
   - Right_Hemp
+  - Point
   layers:
   - Default
   - TransparentFX
