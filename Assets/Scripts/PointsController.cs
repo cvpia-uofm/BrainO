@@ -59,7 +59,7 @@ public class PointsController : MonoBehaviour
             float Y = (float)region.Y;
             float Z = (float)region.Z;
             Matrix<float> inputVector = Matrix<float>.Build.DenseOfArray(new float[,] {
-                { X }, { Y }, { Z }, { 1 }
+                { -X }, { Y }, { Z }, { 1 }
             });
             GameObject Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
             Func_Area.name = region.Abbreviation;
@@ -78,7 +78,7 @@ public class PointsController : MonoBehaviour
 
             Func_Area.transform.SetParent(this.transform);
             var pos = TransformR(inputVector, "X", 90);
-            pos = TransformR(pos, "Y", 180);
+            pos = TransformR(pos, "Y", -180);
             Func_Area.transform.position = new Vector3(pos[0,0],pos[1,0],pos[2,0]);
                
            

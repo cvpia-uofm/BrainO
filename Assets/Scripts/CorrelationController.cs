@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Assets.Models;
 using UnityEngine;
@@ -34,13 +35,14 @@ public class CorrelationController : MonoBehaviour
             var region_end = pointY.transform.position;
 
             var edge = Instantiate(Resources.Load("Edge") as GameObject);
+            edge.name = String.Concat(relation.PointX, "_", relation.PointY);
             edge.transform.parent = transform;
 
             var offset = region_end - region_start;
-            var position = region_start + offset * 0.5f;
+            var position = (region_start + region_end)/2;
             var scale = edge.transform.localScale;
 
-            scale.y = offset.magnitude*0.01f;
+            scale.y = offset.magnitude;
             edge.transform.localScale = scale;
             edge.transform.position = position;
 
