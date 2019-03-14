@@ -8,11 +8,16 @@ using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
 {
+    private List<GameObject> activePoints;
+
     private void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
         BrainController.OnBrainRotate += RotateLineRenderers;
+        //BrainController.OnBrainScale += ScaleCorrelation;
     }
+
+    
 
     private void RotateLineRenderers(float X, float Y)
     {
@@ -22,7 +27,10 @@ public class CorrelationController : MonoBehaviour
 
     private void PlotCorrelations(IEnumerable<Corelation> corelations)
     {
-        List<GameObject> activePoints = new List<GameObject>();
+        RemoveExistingCorrelation();
+
+        activePoints = new List<GameObject>();
+
         foreach(var relation in corelations)
         {
             var pointX = GameObject.Find(relation.PointX);
@@ -49,9 +57,24 @@ public class CorrelationController : MonoBehaviour
             pointX.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
             pointY.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
 
+            pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            
+
         }
 
         ShowOnlyActivePoints(activePoints);
+    }
+
+    private void RemoveExistingCorrelation()
+    {
+        if (transform.childCount == 0)
+            return;
+
+        foreach(Transform relation in transform)
+        {
+            Destroy(relation.gameObject);
+        }
     }
 
     private void GatherActivePoints(List<GameObject> activePoints, GameObject pointX, GameObject pointY)
@@ -69,7 +92,10 @@ public class CorrelationController : MonoBehaviour
         foreach(var point in points)
         {
             if (!activePoints.Exists(a => a.name == point.name))
+            {
                 point.SetActive(false);
+                activePoints.Remove(point);
+            }
         }
     }
 }
