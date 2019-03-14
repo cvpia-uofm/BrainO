@@ -83,8 +83,8 @@ public class PointsController : MonoBehaviour
                
            
         }
-        var c = new Vector3(0.8f, 1.8f, 1.48f);
-        gameObject.transform.localPosition = c;
+        var trans_Vertex = new Vector3(0.7f, 1.9f, 1.48f);
+        gameObject.transform.localPosition = trans_Vertex;
     }
 
     public static Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)

@@ -37,15 +37,15 @@ public class BrainController : MonoBehaviour
             {
                 gameObject.transform.localScale += new Vector3(1f, 1f, 1f);
             }
-            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f); 
+            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f);
         }
         if (Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
             if (!gameObject.transform.localScale.Equals(new Vector3(40, 40, 40)))
             {
-                gameObject.transform.localScale -= new Vector3(1f, 1f, 1f); 
+                gameObject.transform.localScale -= new Vector3(1f, 1f, 1f);
             }
-            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f); 
+            // gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f);
         }
     }
 
