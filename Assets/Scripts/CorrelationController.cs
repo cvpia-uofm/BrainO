@@ -8,11 +8,16 @@ using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
 {
+    private List<GameObject> activePoints;
+
     private void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
         BrainController.OnBrainRotate += RotateLineRenderers;
+        //BrainController.OnBrainScale += ScaleCorrelation;
     }
+
+    
 
     private void RotateLineRenderers(float X, float Y)
     {
@@ -22,14 +27,16 @@ public class CorrelationController : MonoBehaviour
 
     private void PlotCorrelations(IEnumerable<Corelation> corelations)
     {
-        //DeactivateAllPoints();
+        RemoveExistingCorrelation();
+
+        activePoints = new List<GameObject>();
+
         foreach(var relation in corelations)
         {
             var pointX = GameObject.Find(relation.PointX);
             var pointY = GameObject.Find(relation.PointY);
 
-            pointX.SetActive(true);
-            pointY.SetActive(true);
+            GatherActivePoints(activePoints, pointX, pointY);
 
             var region_start = pointX.transform.position;
             var region_end = pointY.transform.position;
@@ -39,31 +46,55 @@ public class CorrelationController : MonoBehaviour
             edge.transform.parent = transform;
 
             var offset = region_end - region_start;
-            var position = (region_start + region_end)/2;
+            var position = (region_start + region_end) / 2;
             var scale = edge.transform.localScale;
 
-            scale.y = offset.magnitude;
-            edge.transform.localScale = scale;
             edge.transform.position = position;
-
+            scale.y = Vector3.Distance(region_start, edge.transform.position);
+            edge.transform.localScale = scale;
             edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
 
             pointX.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
             pointY.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
 
+            pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+            
+
+        }
+
+        ShowOnlyActivePoints(activePoints);
+    }
+
+    private void RemoveExistingCorrelation()
+    {
+        if (transform.childCount == 0)
+            return;
+
+        foreach(Transform relation in transform)
+        {
+            Destroy(relation.gameObject);
         }
     }
 
-   
-    private void DeactivateAllPoints()
+    private void GatherActivePoints(List<GameObject> activePoints, GameObject pointX, GameObject pointY)
     {
-        var points = GameObject.Find("Points").GetComponentsInChildren<Transform>();
+        if (!activePoints.Exists(a => a.name == pointX.name))
+            activePoints.Add(pointX);
+        if (!activePoints.Exists(a => a.name == pointY.name))
+            activePoints.Add(pointY);
+    }
+
+    private void ShowOnlyActivePoints(List<GameObject> activePoints)
+    {
+        var points = GameObject.FindGameObjectsWithTag("Point");
 
         foreach(var point in points)
         {
-            if(point.tag == "Point")
+            if (!activePoints.Exists(a => a.name == point.name))
             {
-                point.gameObject.SetActive(false);
+                point.SetActive(false);
+                activePoints.Remove(point);
             }
         }
     }

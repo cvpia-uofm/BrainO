@@ -13,6 +13,9 @@ public class BrainController : MonoBehaviour
 {
     private const float rotateSpeed = 200;
 
+    public delegate void ScalingAction();
+    public static event ScalingAction OnBrainScale;
+
     public delegate void RotationAction(float X, float Y);
     public static event RotationAction OnBrainRotate;
 
@@ -37,16 +40,19 @@ public class BrainController : MonoBehaviour
             {
                 gameObject.transform.localScale += new Vector3(1f, 1f, 1f);
             }
-            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f); 
+            OnBrainScale();
+            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f);
         }
         if (Input.GetAxis("Mouse ScrollWheel") < 0f)
         {
             if (!gameObject.transform.localScale.Equals(new Vector3(40, 40, 40)))
             {
-                gameObject.transform.localScale -= new Vector3(1f, 1f, 1f); 
+                gameObject.transform.localScale -= new Vector3(1f, 1f, 1f);
             }
-            //gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f); 
+            OnBrainScale();
+            // gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f);
         }
+        
     }
 
     private void Rotation()

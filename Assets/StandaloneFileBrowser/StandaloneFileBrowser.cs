@@ -35,7 +35,7 @@ namespace SFB {
         /// <param name="multiselect">Allow multiple file selection</param>
         /// <returns>Returns array of chosen paths. Zero length array when cancelled</returns>
         public static string[] OpenFilePanel(string title, string directory, string extension, bool multiselect) {
-            var extensions = string.IsNullOrEmpty(extension) ? null : new [] { new ExtensionFilter("", extension) };
+            var extensions = string.IsNullOrWhiteSpace(extension) ? null : new [] { new ExtensionFilter("", extension) };
             return OpenFilePanel(title, directory, extensions, multiselect);
         }
 

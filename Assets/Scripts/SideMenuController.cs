@@ -35,7 +35,10 @@ public class SideMenuController : MonoBehaviour
             new ExtensionFilter("CSV Files", "csv" ),
         };
 
-        var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, true);
+        var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+
+        if (path == null)
+            return;
 
         using (var reader = new StreamReader(path[0]))
         {
