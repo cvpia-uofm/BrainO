@@ -7,13 +7,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
+using UnityEngine.UI;
 
 public class SideMenuController : MonoBehaviour
 {
+    public TMP_Dropdown AtlasDropDown;
+
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations);
     public static event OnPlotAction OnPlotCorrelation;
+
+    public delegate void OnAtlasAction(string atlas_name);
+    public static event OnAtlasAction OnChangeAtlas;
+
 
     private GameObject Left_Hemph;
     private GameObject Right_Hemph;
@@ -23,9 +31,21 @@ public class SideMenuController : MonoBehaviour
     {
         Left_Hemph = GameObject.FindGameObjectWithTag("Left_Hemp");
         Right_Hemph = GameObject.FindGameObjectWithTag("Right_Hemp");
+
         Corelations = new List<Corelation>();
+
+        AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
         
     }
+
+    private int CountRows(StreamReader reader)
+    {
+        int count = 0;
+        while (!String.IsNullOrWhiteSpace(reader.ReadLine()))
+            count++;
+        return count;
+    }
+
     public void Left_Hemph_Activation(bool active) => Left_Hemph.SetActive(active);
     public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
 
@@ -52,11 +72,27 @@ public class SideMenuController : MonoBehaviour
 
     }
 
-    private int CountRows(StreamReader reader)
+    public void OnAtlasDropDownValueChange(int index)
     {
-        int count = 0;
-        while (!String.IsNullOrWhiteSpace(reader.ReadLine()))
-            count++;
-        return count;
+        switch (index)
+        {
+            case 0:
+                OnChangeAtlas(Atlas.DSK_Atlas);
+                break;
+            case 1:
+                OnChangeAtlas(Atlas.DTX_Atlas);
+                break;
+            case 2:
+                OnChangeAtlas(Atlas.CDK_Atlas);
+                break;
+            case 3:
+                OnChangeAtlas(Atlas.A116_Atlas);
+                break;
+            case 4:
+                OnChangeAtlas(Atlas.A90_Atlas);
+                break;
+        }
     }
+    
+
 }

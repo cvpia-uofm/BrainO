@@ -59,8 +59,6 @@ public class CorrelationController : MonoBehaviour
 
             pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
             pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-            
-
         }
 
         ShowOnlyActivePoints(activePoints);

@@ -14,31 +14,60 @@ using UnityEngine;
 public class PointsController : MonoBehaviour
 {
     //public GameObject Func_Area;
-    List<Regions> regions;
+    Atlas atlas;
     static Matrix<float> rTheta;
     List<TMP_Text> pointLabels;
     // Start is called before the first frame update
     private void Awake()
     {
-        pointLabels = new List<TMP_Text>();
-        regions = new List<Regions>();
+        
 
-        LoadFunc_Area_Pos();
+        SideMenuController.OnChangeAtlas += ChangeAtlas;
+
+        atlas = new Atlas();
+
+        atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
+        atlas.Destrieux_Atlas = LoadAtlas(Atlas.DTX_Atlas);
+        atlas.Craddock_Atlas = LoadAtlas(Atlas.CDK_Atlas);
+       // atlas.Aal116_Atlas = LoadAtlas(Atlas.A116_Atlas);
+        atlas.Aal90_Atlas = LoadAtlas(Atlas.A90_Atlas);
     }
 
-    private void LoadFunc_Area_Pos()
+    private void ChangeAtlas(string atlas_name)
+    {
+        switch (atlas_name)
+        {
+            case Atlas.DSK_Atlas:
+                Plot(atlas.Desikan_Atlas);
+                break;
+            case Atlas.DTX_Atlas:
+                Plot(atlas.Destrieux_Atlas);
+                break;
+            case Atlas.CDK_Atlas:
+                Plot(atlas.Craddock_Atlas);
+                break;
+            case Atlas.A116_Atlas:
+                Plot(atlas.Aal116_Atlas);
+                break;
+            case Atlas.A90_Atlas:
+                Plot(atlas.Aal90_Atlas);
+                break;
+        }
+    }
+
+    private IEnumerable<Regions> LoadAtlas(string atlas_name)
     {
         //regions = ExcelFactory<Regions>.Map("..//Assets//Regions//desikan_atlas.csv");
-        TextAsset data_raw = Resources.Load<TextAsset>("Data");
+        TextAsset data_raw = Resources.Load<TextAsset>(atlas_name);
         string[] data = data_raw.text.Split(new char[] { '\n' });
-        regions = (List<Regions>) MapperFactory<Regions>.Map_CSV(data, MapperEnums.Inputs.Regions);
+        return MapperFactory<Regions>.Map_CSV(data, MapperEnums.Inputs.Regions);
     }
 
     // Start is called before the first frame update
     private void Start()
     {
         BrainController.OnBrainRotate += RotateLabels;
-        Plot();
+        Plot(atlas.Destrieux_Atlas);
     }
 
     private void RotateLabels(float X, float Y)
@@ -51,9 +80,11 @@ public class PointsController : MonoBehaviour
 
     }
 
-    private void Plot()
+    private void Plot(IEnumerable<Regions> atlas_regions)
     {
-        foreach (var region in regions)
+        RemoveExistingPlot();
+        pointLabels = new List<TMP_Text>();
+        foreach (var region in atlas_regions)
         {
             float X = (float)region.X;
             float Y = (float)region.Y;
@@ -85,6 +116,17 @@ public class PointsController : MonoBehaviour
         }
         var trans_Vertex = new Vector3(0.7f, 1.9f, 1.48f);
         gameObject.transform.localPosition = trans_Vertex;
+    }
+
+    private void RemoveExistingPlot()
+    {
+        if (transform.childCount == 0)
+            return;
+
+        foreach(Transform point in transform)
+        {
+            Destroy(point.gameObject);
+        }
     }
 
     public static Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)
@@ -123,4 +165,6 @@ public class PointsController : MonoBehaviour
         var pos = rTheta.Multiply(inputVector);
         return pos;
     }
+
+    
 }

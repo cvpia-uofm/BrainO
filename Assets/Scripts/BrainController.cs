@@ -49,7 +49,7 @@ public class BrainController : MonoBehaviour
             {
                 gameObject.transform.localScale -= new Vector3(1f, 1f, 1f);
             }
-            OnBrainScale();
+            //OnBrainScale();
             // gameObject.transform.Translate(Input.mousePosition.x, Input.mousePosition.y, Input.GetAxis("Mouse ScrollWheel") * 30f);
         }
         
