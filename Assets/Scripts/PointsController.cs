@@ -20,8 +20,6 @@ public class PointsController : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-        
-
         SideMenuController.OnChangeAtlas += ChangeAtlas;
 
         atlas = new Atlas();
@@ -29,7 +27,7 @@ public class PointsController : MonoBehaviour
         atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
         atlas.Destrieux_Atlas = LoadAtlas(Atlas.DTX_Atlas);
         atlas.Craddock_Atlas = LoadAtlas(Atlas.CDK_Atlas);
-       // atlas.Aal116_Atlas = LoadAtlas(Atlas.A116_Atlas);
+        atlas.Aal116_Atlas = LoadAtlas(Atlas.A116_Atlas);
         atlas.Aal90_Atlas = LoadAtlas(Atlas.A90_Atlas);
     }
 
@@ -67,7 +65,9 @@ public class PointsController : MonoBehaviour
     private void Start()
     {
         BrainController.OnBrainRotate += RotateLabels;
-        Plot(atlas.Destrieux_Atlas);
+        Plot(atlas.Desikan_Atlas);
+
+
     }
 
     private void RotateLabels(float X, float Y)
@@ -110,18 +110,32 @@ public class PointsController : MonoBehaviour
             Func_Area.transform.SetParent(this.transform);
             var pos = TransformR(inputVector, "X", 90);
             pos = TransformR(pos, "Y", -180);
+            
             Func_Area.transform.position = new Vector3(pos[0,0],pos[1,0],pos[2,0]);
-               
-           
+
+            ScalePoints(Func_Area, atlas_regions.Count());
         }
-        var trans_Vertex = new Vector3(0.7f, 1.9f, 1.48f);
-        gameObject.transform.localPosition = trans_Vertex;
+        var trans_Vertex = new Vector3(0.7f, 1.7f, 1.3f);
+        transform.localPosition = trans_Vertex;
+    }
+
+    private void ScalePoints(GameObject func_Area, int atlas_length)
+    {
+        if (atlas_length == 68)
+            return;
+        if(atlas_length < 100)
+            func_Area.transform.localScale = new Vector3(4, 4, 4);
+        if (atlas_length > 100)
+            func_Area.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
     }
 
     private void RemoveExistingPlot()
     {
         if (transform.childCount == 0)
             return;
+
+        transform.parent.rotation = Quaternion.identity;
+        transform.localPosition = Vector3.zero;
 
         foreach(Transform point in transform)
         {

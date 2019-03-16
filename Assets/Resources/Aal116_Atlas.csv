@@ -59,8 +59,8 @@ PoCG.L ,Postcentral gyrus Left,-42.46,-22.63,48.92,left,.
 PoCG.R ,Postcentral gyrus Left,41.43,-25.49,52.55,right,.
 SPG.L ,Superior parietal gyrus Left,-23.45,-59.56,58.96,left,.
 SPG.R ,Superior parietal gyrus Right,26.11,-59.18,62.06,right,.
-IPL.L ,Inferior parietal, but  supramarginal and angular gyri Left,-42.8,-45.82,46.74,left
-IPL.R ,Inferior parietal, but  supramarginal and angular gyri Right,46.46,-46.29,49.54,right
+IPL.L ,Inferior parietal but supramarginal and angular gyri Left,-42.8,-45.82,46.74,left,.
+IPL.R ,Inferior parietal but supramarginal and angular gyri Right,46.46,-46.29,49.54,right,.
 SMG.L ,Supramarginal gyrus Left,-55.79,-33.64,30.45,left,.
 SMG.R ,Supramarginal gyrus Right,57.61,-31.5,34.48,right,.
 ANG.L ,Angular gyrus Left,-44.14,-60.82,35.59,left,.
@@ -71,10 +71,10 @@ PCL.L ,Paracentral lobule Left,-7.63,-25.36,70.07,left,.
 PCL.R ,Paracentral lobule Right,7.48,-31.59,68.09,right,.
 CAU.L ,Caudate nucleus Left,-11.46,11,9.24,left,.
 CAU.R ,Caudate nucleus Right,14.84,12.07,9.42,right,.
-PUT.L ,Lenticular nucleus, putamen Left,-23.91,3.86,2.4,left
-PUT.R ,Lenticular nucleus, putamen Right,27.78,4.91,2.46,right
-PAL.L ,Lenticular nucleus, pallidum Left,-17.75,-0.03,0.21,left
-PAL.R ,Lenticular nucleus, pallidum Right,21.2,0.18,0.23,right
+PUT.L ,Lenticular nucleus putamen Left,-23.91,3.86,2.4,left,.
+PUT.R ,Lenticular nucleus putamen Right,27.78,4.91,2.46,right,.
+PAL.L ,Lenticular nucleus pallidum Left,-17.75,-0.03,0.21,left,.
+PAL.R ,Lenticular nucleus pallidum Right,21.2,0.18,0.23,right,.
 THA.L ,Thalamus Left,-10.85,-17.56,7.98,left,.
 THA.R ,Thalamus Right,13,-17.55,8.09,right,.
 HES.L ,Heschl gyrus Left,-41.99,-18.88,9.98,left,.
