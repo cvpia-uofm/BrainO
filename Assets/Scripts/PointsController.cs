@@ -1,5 +1,6 @@
 ﻿using Assets.Func_Area_Model;
 using Assets.Models;
+using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
@@ -10,19 +11,24 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 public class PointsController : MonoBehaviour
 {
     //public GameObject Func_Area;
-    Atlas atlas;
+    private IAtlas atlas;
     static Matrix<float> rTheta;
     List<TMP_Text> pointLabels;
-    // Start is called before the first frame update
+
+    [Inject]
+    public void Construct(IAtlas _atlas)
+    {
+        atlas = _atlas;
+    }
+   
     private void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
-
-        atlas = new Atlas();
 
         atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
         atlas.Destrieux_Atlas = LoadAtlas(Atlas.DTX_Atlas);

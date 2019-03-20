@@ -1,4 +1,7 @@
-﻿using Assets.Models;
+﻿using Assets.Func_Area_Model;
+using Assets.Models;
+using Assets.Models.Correlation_Generator;
+using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using SFB;
@@ -11,6 +14,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
+using Zenject;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -22,11 +26,16 @@ public class SideMenuController : MonoBehaviour
     public delegate void OnAtlasAction(string atlas_name);
     public static event OnAtlasAction OnChangeAtlas;
 
+    [Inject]
+    private readonly IAtlas atlas;
+
 
     private GameObject Left_Hemph;
     private GameObject Right_Hemph;
     
     private IEnumerable<Corelation> Corelations;
+
+   
     private void Awake()
     {
         Left_Hemph = GameObject.FindGameObjectWithTag("Left_Hemp");
@@ -49,7 +58,7 @@ public class SideMenuController : MonoBehaviour
     public void Left_Hemph_Activation(bool active) => Left_Hemph.SetActive(active);
     public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
 
-    public void Load_Corelation()
+    public void Load_Correlation()
     {
         var extensions = new[] {
             new ExtensionFilter("CSV Files", "csv" ),
@@ -70,6 +79,11 @@ public class SideMenuController : MonoBehaviour
                 OnPlotCorrelation(Corelations);
         }
 
+    }
+
+    public void Test_Correlation()
+    {
+        var q = CorrelationGenerator.GenerateRandomCorrelation(atlas.Desikan_Atlas);
     }
 
     public void OnAtlasDropDownValueChange(int index)

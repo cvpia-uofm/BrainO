@@ -1,4 +1,5 @@
 ﻿using Assets.Func_Area_Model;
+using Assets.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Assets.Models
 {
-    public partial class Atlas
+    public partial class Atlas : IAtlas
     {
         public IEnumerable<Regions> Desikan_Atlas { get; set; }
         public IEnumerable<Regions> Destrieux_Atlas { get; set; }
