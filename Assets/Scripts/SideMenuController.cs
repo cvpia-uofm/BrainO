@@ -32,6 +32,8 @@ public class SideMenuController : MonoBehaviour
 
     private GameObject Left_Hemph;
     private GameObject Right_Hemph;
+
+    private int _index = 0;
     
     private IEnumerable<Corelation> Corelations;
 
@@ -83,7 +85,27 @@ public class SideMenuController : MonoBehaviour
 
     public void Test_Correlation()
     {
-        var q = CorrelationGenerator.GenerateRandomCorrelation(atlas.Desikan_Atlas);
+        
+        switch (AtlasDropDown.value)
+        {
+            case 0:
+                Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Desikan_Atlas);
+                break;
+            case 1:
+                Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Destrieux_Atlas);
+                break;
+            case 2:
+                Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Craddock_Atlas);
+                break;
+            case 3:
+                Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal116_Atlas);
+                break;
+            case 4:
+                Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal90_Atlas);
+                break;
+        }
+
+        OnPlotCorrelation(Corelations);
     }
 
     public void OnAtlasDropDownValueChange(int index)

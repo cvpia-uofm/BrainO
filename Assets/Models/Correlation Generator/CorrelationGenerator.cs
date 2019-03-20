@@ -18,19 +18,19 @@ namespace Assets.Models.Correlation_Generator
             Random random = new Random();
             GenerateColumns(atlas, corr_matrix, regions);
 
-            for (int i = 1; i < atlas.Count(); i++)
+            for (int i = 0; i < atlas.Count(); i++)
             {
                 regions.Remove(0, regions.Length);
-                regions.Append(atlas.ElementAt(i-1).Abbreviation);
+                regions.Append(atlas.ElementAt(i).Abbreviation);
                 regions.Append(",");
 
-                for (int j = 0; j < atlas.Count(); j++)
+                for (int j = 0; j <= atlas.Count(); j++)
                 {
                     float r = random.Next(0, 150) / 151f;
                     var random_weight = r.ToString("n2");
                     regions.Append(random_weight);
 
-                    if (j != atlas.Count() - 1)
+                    if (j != atlas.Count())
                         regions.Append(",");
                 }
                 corr_matrix[i + 1] = regions.ToString();
