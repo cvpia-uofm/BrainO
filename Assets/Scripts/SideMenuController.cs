@@ -1,26 +1,21 @@
-﻿using Assets.Func_Area_Model;
-using Assets.Models;
+﻿using Assets.Models;
 using Assets.Models.Correlation_Generator;
 using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using SFB;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
-using UnityEngine.UI;
 using Zenject;
 
 public class SideMenuController : MonoBehaviour
 {
     public TMP_Dropdown AtlasDropDown;
 
-    public delegate void OnPlotAction(IEnumerable<Corelation> corelations);
+    public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
 
     public delegate void OnAtlasAction(string atlas_name);
@@ -29,11 +24,10 @@ public class SideMenuController : MonoBehaviour
     [Inject]
     private readonly IAtlas atlas;
 
-
     private GameObject Left_Hemph;
     private GameObject Right_Hemph;
 
-    private int _index = 0;
+    private string Current_Atlas = Atlas.DSK_Atlas;
     
     private IEnumerable<Corelation> Corelations;
 
@@ -78,7 +72,7 @@ public class SideMenuController : MonoBehaviour
             Corelations = MapperFactory<Corelation>.Map_CSV(data, MapperEnums.Inputs.Correlations);
 
             if ((Corelations as List<Corelation>).Count != 0)
-                OnPlotCorrelation(Corelations);
+                OnPlotCorrelation(Corelations, Current_Atlas);
         }
 
     }
@@ -105,7 +99,7 @@ public class SideMenuController : MonoBehaviour
                 break;
         }
 
-        OnPlotCorrelation(Corelations);
+        OnPlotCorrelation(Corelations, Current_Atlas);
     }
 
     public void OnAtlasDropDownValueChange(int index)
@@ -114,18 +108,23 @@ public class SideMenuController : MonoBehaviour
         {
             case 0:
                 OnChangeAtlas(Atlas.DSK_Atlas);
+                Current_Atlas = Atlas.DSK_Atlas;
                 break;
             case 1:
                 OnChangeAtlas(Atlas.DTX_Atlas);
+                Current_Atlas = Atlas.DTX_Atlas;
                 break;
             case 2:
                 OnChangeAtlas(Atlas.CDK_Atlas);
+                Current_Atlas = Atlas.CDK_Atlas;
                 break;
             case 3:
                 OnChangeAtlas(Atlas.A116_Atlas);
+                Current_Atlas = Atlas.A116_Atlas;
                 break;
             case 4:
                 OnChangeAtlas(Atlas.A90_Atlas);
+                Current_Atlas = Atlas.A90_Atlas;
                 break;
         }
     }

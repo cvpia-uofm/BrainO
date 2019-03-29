@@ -1864,7 +1864,7 @@ GameObject:
   - component: {fileID: 873667116}
   - component: {fileID: 873667115}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Test_Correlation_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2374,7 +2374,7 @@ GameObject:
   - component: {fileID: 1483925135}
   - component: {fileID: 1483925134}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Load_Correlation_btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2441,7 +2441,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 947152797}
-        m_MethodName: Load_Corelation
+        m_MethodName: Load_Correlation
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

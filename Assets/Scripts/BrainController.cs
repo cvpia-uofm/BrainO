@@ -13,9 +13,6 @@ public class BrainController : MonoBehaviour
 {
     private const float rotateSpeed = 200;
 
-    public delegate void ScalingAction();
-    public static event ScalingAction OnBrainScale;
-
     public delegate void RotationAction(float X, float Y);
     public static event RotationAction OnBrainRotate;
 
