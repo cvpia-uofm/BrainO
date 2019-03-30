@@ -4,9 +4,6 @@ using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Complex;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -15,7 +12,6 @@ using Zenject;
 
 public class PointsController : MonoBehaviour
 {
-    //public GameObject Func_Area;
     private IAtlas atlas;
     static Matrix<float> rTheta;
     List<TMP_Text> pointLabels;
@@ -29,7 +25,11 @@ public class PointsController : MonoBehaviour
     private void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
+        Init_Atlas();
+    }
 
+    private void Init_Atlas()
+    {
         atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
         atlas.Destrieux_Atlas = LoadAtlas(Atlas.DTX_Atlas);
         atlas.Craddock_Atlas = LoadAtlas(Atlas.CDK_Atlas);
@@ -61,7 +61,6 @@ public class PointsController : MonoBehaviour
 
     private IEnumerable<Regions> LoadAtlas(string atlas_name)
     {
-        //regions = ExcelFactory<Regions>.Map("..//Assets//Regions//desikan_atlas.csv");
         TextAsset data_raw = Resources.Load<TextAsset>(atlas_name);
         string[] data = data_raw.text.Split(new char[] { '\n' });
         return MapperFactory<Regions>.Map_CSV(data, MapperEnums.Inputs.Regions);
@@ -88,41 +87,75 @@ public class PointsController : MonoBehaviour
 
     private void Plot(IEnumerable<Regions> atlas_regions)
     {
-        RemoveExistingPlot();
-        pointLabels = new List<TMP_Text>();
+        Init_Plot();
+
         foreach (var region in atlas_regions)
         {
-            float X = (float)region.X;
-            float Y = (float)region.Y;
-            float Z = (float)region.Z;
-            Matrix<float> inputVector = Matrix<float>.Build.DenseOfArray(new float[,] {
-                { -X }, { Y }, { Z }, { 1 }
-            });
-            GameObject Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
-            Func_Area.name = region.Abbreviation;
-            Func_Area.tag = "Point";
+            Matrix<float> inputVector;
+            GameObject Func_Area;
+            Load_Init_Point(region, out inputVector, out Func_Area);
             //Instantiate(Func_Area, Func_Area.transform);
-            if (region.Hemisphere.Equals("left"))
-            {
-                MaterialPropertyBlock props = new MaterialPropertyBlock();
-                props.SetColor("_Color", Color.red);
-                Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
-            }
-            var canvas = Func_Area.transform.Find("Canvas");
-            var textobj = canvas.GetComponentInChildren<TMP_Text>();
-            textobj.text = region.Abbreviation;
-            pointLabels.Add(textobj);
+            Add_Color_to_left_hemp(region, Func_Area);
+            Add_Label_to_Point(region, Func_Area);
+            Set_Tranform_of_Point(atlas_regions, inputVector, Func_Area);
 
-            Func_Area.transform.SetParent(this.transform);
-            var pos = TransformR(inputVector, "X", 90);
-            pos = TransformR(pos, "Y", -180);
-            
-            Func_Area.transform.position = new Vector3(pos[0,0],pos[1,0],pos[2,0]);
-
-            ScalePoints(Func_Area, atlas_regions.Count());
         }
+
+        Translate_Points();
+    }
+
+    private void Translate_Points()
+    {
         var trans_Vertex = new Vector3(0.7f, 1.7f, 1.3f);
         transform.localPosition = trans_Vertex;
+    }
+
+    private void Set_Tranform_of_Point(IEnumerable<Regions> atlas_regions, Matrix<float> inputVector, GameObject Func_Area)
+    {
+        Func_Area.transform.SetParent(this.transform);
+        var pos = TransformR(inputVector, "X", 90);
+        pos = TransformR(pos, "Y", -180);
+
+        Func_Area.transform.position = new Vector3(pos[0, 0], pos[1, 0], pos[2, 0]);
+
+        ScalePoints(Func_Area, atlas_regions.Count());
+    }
+
+    private void Add_Label_to_Point(Regions region, GameObject Func_Area)
+    {
+        var canvas = Func_Area.transform.Find("Canvas");
+        var textobj = canvas.GetComponentInChildren<TMP_Text>();
+        textobj.text = region.Abbreviation;
+        pointLabels.Add(textobj);
+    }
+
+    private void Add_Color_to_left_hemp(Regions region, GameObject Func_Area)
+    {
+        if (region.Hemisphere.Equals("left"))
+        {
+            MaterialPropertyBlock props = new MaterialPropertyBlock();
+            props.SetColor("_Color", Color.red);
+            Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
+        }
+    }
+
+    private void Load_Init_Point(Regions region, out Matrix<float> inputVector, out GameObject Func_Area)
+    {
+        float X = (float)region.X;
+        float Y = (float)region.Y;
+        float Z = (float)region.Z;
+        inputVector = Matrix<float>.Build.DenseOfArray(new float[,] {
+                { -X }, { Y }, { Z }, { 1 }
+            });
+        Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
+        Func_Area.name = region.Abbreviation;
+        Func_Area.tag = "Point";
+    }
+
+    private void Init_Plot()
+    {
+        RemoveExistingPlot();
+        pointLabels = new List<TMP_Text>();
     }
 
     private void ScalePoints(GameObject func_Area, int atlas_length)

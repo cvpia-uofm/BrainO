@@ -8,9 +8,9 @@ using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
 {
-    private List<GameObject> activePoints;
     private string Current_Atlas;
     private IEnumerable<Corelation> Current_Correlations;
+    private List<GameObject> activePoints;
 
     private void Awake()
     {
@@ -37,14 +37,15 @@ public class CorrelationController : MonoBehaviour
 
         foreach (var relation in corelations)
         {
-            GameObject pointX, pointY, edge;
-            Vector3 region_start, region_end;
-            Load_Init_Prefab_Edge(relation, out pointX, out pointY, out region_start, out region_end, out edge);
+            Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY, 
+                out Vector3 region_start, out Vector3 region_end, out GameObject edge);
+
             Configure_Transformation(edge, region_start, region_end);
+
             Configure_RigidBody_Constraints(pointX, pointY, edge);
         }
 
-        ShowOnlyActivePoints(activePoints);
+        ShowOnlyActivePoints();
     }
 
     private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
@@ -82,7 +83,7 @@ public class CorrelationController : MonoBehaviour
     {
         pointX = GameObject.Find(relation.PointX);
         pointY = GameObject.Find(relation.PointY);
-        GatherActivePoints(activePoints, pointX, pointY);
+        GatherActivePoints(pointX, pointY);
 
         region_start = pointX.transform.position;
         region_end = pointY.transform.position;
@@ -102,7 +103,7 @@ public class CorrelationController : MonoBehaviour
         }
     }
 
-    private void GatherActivePoints(List<GameObject> activePoints, GameObject pointX, GameObject pointY)
+    private void GatherActivePoints(GameObject pointX, GameObject pointY)
     {
         if (!activePoints.Exists(a => a.name == pointX.name))
             activePoints.Add(pointX);
@@ -110,7 +111,7 @@ public class CorrelationController : MonoBehaviour
             activePoints.Add(pointY);
     }
 
-    private void ShowOnlyActivePoints(List<GameObject> activePoints)
+    private void ShowOnlyActivePoints()
     {
         var points = GameObject.FindGameObjectsWithTag("Point");
 
