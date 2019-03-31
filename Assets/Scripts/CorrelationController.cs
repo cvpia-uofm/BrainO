@@ -73,6 +73,10 @@ public class CorrelationController : MonoBehaviour
     {
         RemoveExistingCorrelation();
 
+        transform.parent.position = Vector3.zero;
+        transform.parent.rotation = Quaternion.identity;
+        transform.parent.localScale = new Vector3(40, 40, 40);
+
         Current_Atlas = current_atlas;
         Current_Correlations = corelations;
 
@@ -88,7 +92,7 @@ public class CorrelationController : MonoBehaviour
         region_start = pointX.transform.position;
         region_end = pointY.transform.position;
         edge = Instantiate(Resources.Load("Edge") as GameObject);
-        edge.name = String.Concat(relation.PointX, "_", relation.PointY);
+        edge.name = string.Concat(relation.PointX, "_", relation.PointY);
         edge.transform.parent = transform;
     }
 

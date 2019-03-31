@@ -161,11 +161,20 @@ public class PointsController : MonoBehaviour
     private void ScalePoints(GameObject func_Area, int atlas_length)
     {
         if (atlas_length == 68)
+        {
+            func_Area.transform.localScale = new Vector3(5f, 5f, 5f);
             return;
-        if(atlas_length < 100)
-            func_Area.transform.localScale = new Vector3(4, 4, 4);
+        }
+        if (atlas_length < 100)
+        {
+            func_Area.transform.localScale = new Vector3(4f, 4f, 4f);
+            return;
+        }
         if (atlas_length > 100)
+        {
             func_Area.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
+            return;
+        }
     }
 
     private void RemoveExistingPlot()
@@ -175,6 +184,7 @@ public class PointsController : MonoBehaviour
 
         transform.parent.rotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;
+        transform.parent.localScale = new Vector3(40, 40, 40);
 
         foreach(Transform point in transform)
         {
