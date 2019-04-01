@@ -4,6 +4,7 @@ using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -25,7 +26,16 @@ public class PointsController : MonoBehaviour
     private void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
+        CorrelationController.ActivateAllPoints += ActivateAllPoints;
         Init_Atlas();
+    }
+
+    private void ActivateAllPoints()
+    {
+        foreach(var child in gameObject.GetComponentsInChildren<Transform>())
+        {
+            child.gameObject.SetActive(true);
+        }
     }
 
     private void Init_Atlas()
@@ -42,19 +52,19 @@ public class PointsController : MonoBehaviour
         switch (atlas_name)
         {
             case Atlas.DSK_Atlas:
-                Plot(atlas.Desikan_Atlas);
+                Plot(atlas.Desikan_Atlas, Atlas.DSK_Atlas);
                 break;
             case Atlas.DTX_Atlas:
-                Plot(atlas.Destrieux_Atlas);
+                Plot(atlas.Destrieux_Atlas, Atlas.DTX_Atlas);
                 break;
             case Atlas.CDK_Atlas:
-                Plot(atlas.Craddock_Atlas);
+                Plot(atlas.Craddock_Atlas, Atlas.CDK_Atlas);
                 break;
             case Atlas.A116_Atlas:
-                Plot(atlas.Aal116_Atlas);
+                Plot(atlas.Aal116_Atlas, Atlas.A116_Atlas);
                 break;
             case Atlas.A90_Atlas:
-                Plot(atlas.Aal90_Atlas);
+                Plot(atlas.Aal90_Atlas, Atlas.A90_Atlas);
                 break;
         }
     }
@@ -70,9 +80,7 @@ public class PointsController : MonoBehaviour
     private void Start()
     {
         BrainController.OnBrainRotate += RotateLabels;
-        Plot(atlas.Desikan_Atlas);
-
-
+        Plot(atlas.Desikan_Atlas, Atlas.DSK_Atlas);
     }
 
     private void RotateLabels(float X, float Y)
@@ -85,7 +93,7 @@ public class PointsController : MonoBehaviour
 
     }
 
-    private void Plot(IEnumerable<Regions> atlas_regions)
+    private void Plot(IEnumerable<Regions> atlas_regions, string atlas_name)
     {
         Init_Plot();
 
@@ -93,12 +101,10 @@ public class PointsController : MonoBehaviour
         {
             Matrix<float> inputVector;
             GameObject Func_Area;
-            Load_Init_Point(region, out inputVector, out Func_Area);
-            //Instantiate(Func_Area, Func_Area.transform);
+            Load_Init_Point(region, atlas_name ,out inputVector, out Func_Area);
             Add_Color_to_left_hemp(region, Func_Area);
             Add_Label_to_Point(region, Func_Area);
             Set_Tranform_of_Point(atlas_regions, inputVector, Func_Area);
-
         }
 
         Translate_Points();
@@ -139,7 +145,7 @@ public class PointsController : MonoBehaviour
         }
     }
 
-    private void Load_Init_Point(Regions region, out Matrix<float> inputVector, out GameObject Func_Area)
+    private void Load_Init_Point(Regions region, string atlas_name, out Matrix<float> inputVector, out GameObject Func_Area)
     {
         float X = (float)region.X;
         float Y = (float)region.Y;
@@ -149,7 +155,8 @@ public class PointsController : MonoBehaviour
             });
         Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
         Func_Area.name = region.Abbreviation;
-        Func_Area.tag = "Point";
+        
+        Func_Area.tag = atlas_name;
     }
 
     private void Init_Plot()

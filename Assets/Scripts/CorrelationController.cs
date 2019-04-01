@@ -12,6 +12,9 @@ public class CorrelationController : MonoBehaviour
     private IEnumerable<Corelation> Current_Correlations;
     private List<GameObject> activePoints;
 
+    public delegate void OnActivateAction();
+    public static event OnActivateAction ActivateAllPoints;
+
     private void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
@@ -22,11 +25,11 @@ public class CorrelationController : MonoBehaviour
     {
         if (atlas_name == Current_Atlas)
         {
-            PlotCorrelations(Current_Correlations, Current_Atlas);
+            gameObject.SetActive(true);
             return;
         }
-            
-        RemoveExistingCorrelation();
+
+        gameObject.SetActive(false);
 
         
     }
@@ -45,7 +48,7 @@ public class CorrelationController : MonoBehaviour
             Configure_RigidBody_Constraints(pointX, pointY, edge);
         }
 
-        ShowOnlyActivePoints();
+        ShowOnlyActivePoints(current_atlas);
     }
 
     private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
@@ -72,6 +75,7 @@ public class CorrelationController : MonoBehaviour
     private void InitPlot(IEnumerable<Corelation> corelations, string current_atlas)
     {
         RemoveExistingCorrelation();
+        ActivateAllPoints();
 
         transform.parent.position = Vector3.zero;
         transform.parent.rotation = Quaternion.identity;
@@ -115,9 +119,9 @@ public class CorrelationController : MonoBehaviour
             activePoints.Add(pointY);
     }
 
-    private void ShowOnlyActivePoints()
+    private void ShowOnlyActivePoints(string atlas_name)
     {
-        var points = GameObject.FindGameObjectsWithTag("Point");
+        var points = GameObject.FindGameObjectsWithTag(atlas_name);
 
         foreach(var point in points)
         {
