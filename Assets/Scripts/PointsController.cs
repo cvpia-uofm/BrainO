@@ -32,7 +32,7 @@ public class PointsController : MonoBehaviour
 
     private void ActivateAllPoints()
     {
-        foreach(var child in gameObject.GetComponentsInChildren<Transform>())
+        foreach(var child in gameObject.GetComponentsInChildren<Transform>(true))
         {
             child.gameObject.SetActive(true);
         }
@@ -101,7 +101,7 @@ public class PointsController : MonoBehaviour
         {
             Matrix<float> inputVector;
             GameObject Func_Area;
-            Load_Init_Point(region, atlas_name ,out inputVector, out Func_Area);
+            Load_Init_Point(region, atlas_name, out inputVector, out Func_Area);
             Add_Color_to_left_hemp(region, Func_Area);
             Add_Label_to_Point(region, Func_Area);
             Set_Tranform_of_Point(atlas_regions, inputVector, Func_Area);
@@ -119,6 +119,7 @@ public class PointsController : MonoBehaviour
     private void Set_Tranform_of_Point(IEnumerable<Regions> atlas_regions, Matrix<float> inputVector, GameObject Func_Area)
     {
         Func_Area.transform.SetParent(this.transform);
+
         var pos = TransformR(inputVector, "X", 90);
         pos = TransformR(pos, "Y", -180);
 
@@ -188,15 +189,19 @@ public class PointsController : MonoBehaviour
     {
         if (transform.childCount == 0)
             return;
+        SetDaefaultTransform();
 
-        transform.parent.rotation = Quaternion.identity;
-        transform.localPosition = Vector3.zero;
-        transform.parent.localScale = new Vector3(40, 40, 40);
-
-        foreach(Transform point in transform)
+        foreach (Transform point in transform)
         {
             Destroy(point.gameObject);
         }
+    }
+
+    private void SetDaefaultTransform()
+    {
+        transform.parent.rotation = Quaternion.identity;
+        transform.localPosition = Vector3.zero;
+        transform.parent.localScale = new Vector3(40, 40, 40);
     }
 
     public static Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)

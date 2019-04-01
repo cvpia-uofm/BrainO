@@ -26,6 +26,7 @@ public class CorrelationController : MonoBehaviour
         if (atlas_name == Current_Atlas)
         {
             gameObject.SetActive(true);
+            ShowOnlyActivePoints(atlas_name);
             return;
         }
 
@@ -128,7 +129,6 @@ public class CorrelationController : MonoBehaviour
             if (!activePoints.Exists(a => a.name == point.name))
             {
                 point.SetActive(false);
-                activePoints.Remove(point);
             }
         }
     }
