@@ -7,6 +7,11 @@ TagManager:
   - Left_Hemp
   - Right_Hemp
   - Point
+  - Desikan_Atlas
+  - Destrieux_Atlas
+  - Craddock_Atlas
+  - Aal116_Atlas
+  - Aal90_Atlas
   layers:
   - Default
   - TransparentFX

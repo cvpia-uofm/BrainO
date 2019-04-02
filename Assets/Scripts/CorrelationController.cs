@@ -22,7 +22,6 @@ public class CorrelationController : MonoBehaviour
     }
 
     #region Configure Correlation
-
     private void PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
     {
         InitPlot(corelations, current_atlas);
@@ -32,7 +31,7 @@ public class CorrelationController : MonoBehaviour
             Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY,
                 out Vector3 region_start, out Vector3 region_end, out GameObject edge);
 
-            Configure_Transformation(edge, region_start, region_end);
+            Configure_Transformation(relation, edge, region_start, region_end);
 
             Configure_RigidBody_Constraints(pointX, pointY, edge);
         }
@@ -66,14 +65,17 @@ public class CorrelationController : MonoBehaviour
         edge.transform.parent = transform;
     }
 
-    private void Configure_Transformation(GameObject edge, Vector3 region_start, Vector3 region_end)
+    private void Configure_Transformation(Corelation relation, GameObject edge, Vector3 region_start, Vector3 region_end)
     {
         var offset = region_end - region_start;
         var position = (region_start + region_end) / 2;
         var scale = edge.transform.localScale;
 
         edge.transform.position = position;
+
         scale.y = Vector3.Distance(region_start, edge.transform.position);
+        scale.x = (float)relation.Weight;
+        scale.z = (float)relation.Weight;
         edge.transform.localScale = scale;
         edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
     }
@@ -93,6 +95,7 @@ public class CorrelationController : MonoBehaviour
     {
         pointX = GameObject.Find(relation.PointX);
         pointY = GameObject.Find(relation.PointY);
+        pointX.transform.localScale = new Vector3(7, 7, 7);
         GatherActivePoints(pointX, pointY);
     }
 
