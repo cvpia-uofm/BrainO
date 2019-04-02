@@ -4,6 +4,6 @@
     {
         public string PointX { get; set; }
         public string PointY { get; set; }
-        public int Weight { get; set; }
+        public double Weight { get; set; }
     }
 }

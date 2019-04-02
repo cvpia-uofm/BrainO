@@ -14,8 +14,8 @@ using Zenject;
 public class PointsController : MonoBehaviour
 {
     private IAtlas atlas;
-    static Matrix<float> rTheta;
-    List<TMP_Text> pointLabels;
+    private static Matrix<float> rTheta;
+    private List<TMP_Text> pointLabels;
 
     [Inject]
     public void Construct(IAtlas _atlas)

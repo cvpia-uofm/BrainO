@@ -18,22 +18,10 @@ public class CorrelationController : MonoBehaviour
     private void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
-        SideMenuController.OnChangeAtlas += ResetCorrelation;
+        SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
     }
 
-    private void ResetCorrelation(string atlas_name)
-    {
-        if (atlas_name == Current_Atlas)
-        {
-            gameObject.SetActive(true);
-            ShowOnlyActivePoints(atlas_name);
-            return;
-        }
-
-        gameObject.SetActive(false);
-
-        
-    }
+    #region Configure Correlation
 
     private void PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
     {
@@ -41,7 +29,7 @@ public class CorrelationController : MonoBehaviour
 
         foreach (var relation in corelations)
         {
-            Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY, 
+            Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY,
                 out Vector3 region_start, out Vector3 region_end, out GameObject edge);
 
             Configure_Transformation(edge, region_start, region_end);
@@ -50,27 +38,6 @@ public class CorrelationController : MonoBehaviour
         }
 
         ShowOnlyActivePoints(current_atlas);
-    }
-
-    private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
-    {
-        pointX.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
-        pointY.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
-
-        pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-        pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
-    }
-
-    private void Configure_Transformation(GameObject edge, Vector3 region_start, Vector3 region_end)
-    {
-        var offset = region_end - region_start;
-        var position = (region_start + region_end) / 2;
-        var scale = edge.transform.localScale;
-
-        edge.transform.position = position;
-        scale.y = Vector3.Distance(region_start, edge.transform.position);
-        edge.transform.localScale = scale;
-        edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
     }
 
     private void InitPlot(IEnumerable<Corelation> corelations, string current_atlas)
@@ -90,9 +57,7 @@ public class CorrelationController : MonoBehaviour
 
     private void Load_Init_Prefab_Edge(Corelation relation, out GameObject pointX, out GameObject pointY, out Vector3 region_start, out Vector3 region_end, out GameObject edge)
     {
-        pointX = GameObject.Find(relation.PointX);
-        pointY = GameObject.Find(relation.PointY);
-        GatherActivePoints(pointX, pointY);
+        Find_Gather_Points(relation, out pointX, out pointY);
 
         region_start = pointX.transform.position;
         region_end = pointY.transform.position;
@@ -101,15 +66,34 @@ public class CorrelationController : MonoBehaviour
         edge.transform.parent = transform;
     }
 
-    private void RemoveExistingCorrelation()
+    private void Configure_Transformation(GameObject edge, Vector3 region_start, Vector3 region_end)
     {
-        if (transform.childCount == 0)
-            return;
+        var offset = region_end - region_start;
+        var position = (region_start + region_end) / 2;
+        var scale = edge.transform.localScale;
 
-        foreach(Transform relation in transform)
-        {
-            Destroy(relation.gameObject);
-        }
+        edge.transform.position = position;
+        scale.y = Vector3.Distance(region_start, edge.transform.position);
+        edge.transform.localScale = scale;
+        edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
+    }
+
+    private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
+    {
+        pointX.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
+        pointY.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
+
+        pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+        pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+    }
+    #endregion
+
+    #region Gather Remove Find Points
+    private void Find_Gather_Points(Corelation relation, out GameObject pointX, out GameObject pointY)
+    {
+        pointX = GameObject.Find(relation.PointX);
+        pointY = GameObject.Find(relation.PointY);
+        GatherActivePoints(pointX, pointY);
     }
 
     private void GatherActivePoints(GameObject pointX, GameObject pointY)
@@ -124,7 +108,7 @@ public class CorrelationController : MonoBehaviour
     {
         var points = GameObject.FindGameObjectsWithTag(atlas_name);
 
-        foreach(var point in points)
+        foreach (var point in points)
         {
             if (!activePoints.Exists(a => a.name == point.name))
             {
@@ -132,4 +116,39 @@ public class CorrelationController : MonoBehaviour
             }
         }
     }
+
+    private void RemoveExistingCorrelation()
+    {
+        if (transform.childCount == 0)
+            return;
+
+        foreach (Transform relation in transform)
+        {
+            Destroy(relation.gameObject);
+        }
+    }
+
+    private void Trigger_Existing_Correlation(string atlas_name)
+    {
+        if (atlas_name == Current_Atlas)
+        {
+            gameObject.SetActive(true);
+
+            Configure_Current_Correlation(atlas_name);
+            return;
+        }
+
+        gameObject.SetActive(false);
+    }
+
+    private void Configure_Current_Correlation(string atlas_name)
+    {
+        activePoints = new List<GameObject>();
+        foreach (var relation in Current_Correlations)
+        {
+            Find_Gather_Points(relation, out GameObject x, out GameObject y);
+        }
+        ShowOnlyActivePoints(atlas_name);
+    } 
+    #endregion
 }
