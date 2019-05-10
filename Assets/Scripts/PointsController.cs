@@ -4,7 +4,6 @@ using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -22,7 +21,7 @@ public class PointsController : MonoBehaviour
     {
         atlas = _atlas;
     }
-   
+
     private void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
@@ -37,6 +36,7 @@ public class PointsController : MonoBehaviour
     }
 
     #region Events
+
     private void ChangeAtlas(string atlas_name)
     {
         switch (atlas_name)
@@ -44,15 +44,19 @@ public class PointsController : MonoBehaviour
             case Atlas.DSK_Atlas:
                 Plot(atlas.Desikan_Atlas, Atlas.DSK_Atlas);
                 break;
+
             case Atlas.DTX_Atlas:
                 Plot(atlas.Destrieux_Atlas, Atlas.DTX_Atlas);
                 break;
+
             case Atlas.CDK_Atlas:
                 Plot(atlas.Craddock_Atlas, Atlas.CDK_Atlas);
                 break;
+
             case Atlas.A116_Atlas:
                 Plot(atlas.Aal116_Atlas, Atlas.A116_Atlas);
                 break;
+
             case Atlas.A90_Atlas:
                 Plot(atlas.Aal90_Atlas, Atlas.A90_Atlas);
                 break;
@@ -74,11 +78,12 @@ public class PointsController : MonoBehaviour
             point.transform.Rotate(Vector3.up, X);
             point.transform.Rotate(Vector3.right, -Y);
         }
-
     }
-    #endregion
+
+    #endregion Events
 
     #region Initialize Atlas
+
     private void Init_Atlas()
     {
         atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
@@ -94,9 +99,11 @@ public class PointsController : MonoBehaviour
         string[] data = data_raw.text.Split(new char[] { '\n' });
         return MapperFactory<Regions>.Map_CSV(data, MapperEnums.Inputs.Regions);
     }
-    #endregion
+
+    #endregion Initialize Atlas
 
     #region Points Configuration
+
     private void Plot(IEnumerable<Regions> atlas_regions, string atlas_name)
     {
         Init_Plot();
@@ -207,9 +214,11 @@ public class PointsController : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.parent.localScale = new Vector3(40, 40, 40);
     }
-    #endregion
+
+    #endregion Points Configuration
 
     #region Axis Transformation
+
     public static Matrix<float> TransformR(Matrix<float> inputVector, string Axis, float angle)
     {
         angle = angle * Mathf.PI / 180;
@@ -224,6 +233,7 @@ public class PointsController : MonoBehaviour
                     { 0, 0, 0, 1 }
                 });
                 break;
+
             case "Y":
                 rTheta = Matrix<float>.Build.DenseOfArray(new float[,] {
                     { Mathf.Cos(angle), 0, -Mathf.Sin(angle), 0 },
@@ -232,6 +242,7 @@ public class PointsController : MonoBehaviour
                     { 0, 0, 0, 1 }
                 });
                 break;
+
             case "X":
                 rTheta = Matrix<float>.Build.DenseOfArray(new float[,] {
                     { 1, 0, 0, 0 },
@@ -242,11 +253,9 @@ public class PointsController : MonoBehaviour
                 break;
         }
 
-
         var pos = rTheta.Multiply(inputVector);
         return pos;
-    } 
-    #endregion
+    }
 
-
+    #endregion Axis Transformation
 }

@@ -16,9 +16,11 @@ public class SideMenuController : MonoBehaviour
     public TMP_Dropdown AtlasDropDown;
 
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
+
     public static event OnPlotAction OnPlotCorrelation;
 
     public delegate void OnAtlasAction(string atlas_name);
+
     public static event OnAtlasAction OnChangeAtlas;
 
     [Inject]
@@ -28,10 +30,17 @@ public class SideMenuController : MonoBehaviour
     private GameObject Right_Hemph;
 
     private string Current_Atlas = Atlas.DSK_Atlas;
-    
+
     private IEnumerable<Corelation> Corelations;
 
-   
+    #region Animator
+    public void DisableBoolAnimator(Animator anim)
+    {
+        anim.SetBool("IsDisplayed", false);
+    }
+
+    #endregion
+
     private void Awake()
     {
         Left_Hemph = GameObject.FindGameObjectWithTag("Left_Hemp");
@@ -40,7 +49,6 @@ public class SideMenuController : MonoBehaviour
         Corelations = new List<Corelation>();
 
         AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
-        
     }
 
     private int CountRows(StreamReader reader)
@@ -52,6 +60,7 @@ public class SideMenuController : MonoBehaviour
     }
 
     public void Left_Hemph_Activation(bool active) => Left_Hemph.SetActive(active);
+
     public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
 
     public void Load_Correlation()
@@ -74,26 +83,28 @@ public class SideMenuController : MonoBehaviour
             if ((Corelations as List<Corelation>).Count != 0)
                 OnPlotCorrelation(Corelations, Current_Atlas);
         }
-
     }
 
     public void Test_Correlation()
     {
-        
         switch (AtlasDropDown.value)
         {
             case 0:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Desikan_Atlas);
                 break;
+
             case 1:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Destrieux_Atlas);
                 break;
+
             case 2:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Craddock_Atlas);
                 break;
+
             case 3:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal116_Atlas);
                 break;
+
             case 4:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal90_Atlas);
                 break;
@@ -110,24 +121,26 @@ public class SideMenuController : MonoBehaviour
                 OnChangeAtlas(Atlas.DSK_Atlas);
                 Current_Atlas = Atlas.DSK_Atlas;
                 break;
+
             case 1:
                 OnChangeAtlas(Atlas.DTX_Atlas);
                 Current_Atlas = Atlas.DTX_Atlas;
                 break;
+
             case 2:
                 OnChangeAtlas(Atlas.CDK_Atlas);
                 Current_Atlas = Atlas.CDK_Atlas;
                 break;
+
             case 3:
                 OnChangeAtlas(Atlas.A116_Atlas);
                 Current_Atlas = Atlas.A116_Atlas;
                 break;
+
             case 4:
                 OnChangeAtlas(Atlas.A90_Atlas);
                 Current_Atlas = Atlas.A90_Atlas;
                 break;
         }
     }
-    
-
 }

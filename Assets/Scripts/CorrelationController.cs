@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using Assets.Models;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Assets.Models;
 using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
@@ -13,6 +9,7 @@ public class CorrelationController : MonoBehaviour
     private List<GameObject> activePoints;
 
     public delegate void OnActivateAction();
+
     public static event OnActivateAction ActivateAllPoints;
 
     private void Awake()
@@ -21,7 +18,12 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
     }
 
+    private void Update()
+    {
+    }
+
     #region Configure Correlation
+
     private void PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
     {
         InitPlot(corelations, current_atlas);
@@ -69,14 +71,15 @@ public class CorrelationController : MonoBehaviour
     {
         var offset = region_end - region_start;
         var position = (region_start + region_end) / 2;
-        var scale = edge.transform.localScale;
 
         edge.transform.position = position;
 
+        var scale = edge.transform.localScale;
         scale.y = Vector3.Distance(region_start, edge.transform.position);
         scale.x = (float)relation.Weight;
         scale.z = (float)relation.Weight;
         edge.transform.localScale = scale;
+        
         edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
     }
 
@@ -88,9 +91,11 @@ public class CorrelationController : MonoBehaviour
         pointX.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
         pointY.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
     }
-    #endregion
+
+    #endregion Configure Correlation
 
     #region Gather Remove Find Points
+
     private void Find_Gather_Points(Corelation relation, out GameObject pointX, out GameObject pointY)
     {
         pointX = GameObject.Find(relation.PointX);
@@ -152,6 +157,7 @@ public class CorrelationController : MonoBehaviour
             Find_Gather_Points(relation, out GameObject x, out GameObject y);
         }
         ShowOnlyActivePoints(atlas_name);
-    } 
-    #endregion
+    }
+
+    #endregion Gather Remove Find Points
 }
