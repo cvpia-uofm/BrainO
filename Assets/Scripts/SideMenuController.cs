@@ -10,10 +10,11 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using Zenject;
-
+using UnityEngine.UI;
 public class SideMenuController : MonoBehaviour
 {
     public TMP_Dropdown AtlasDropDown;
+    public Button Collapse_btn;
 
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
 
@@ -34,10 +35,21 @@ public class SideMenuController : MonoBehaviour
     private IEnumerable<Corelation> Corelations;
 
     #region Animator
-    public void DisableBoolAnimator(Animator anim)
+    public void BoolAnimator(Animator anim)
     {
-        anim.SetBool("IsDisplayed", false);
+        if (anim.GetBool("IsDisplayed"))
+        {
+            anim.SetBool("IsDisplayed", false);
+            Collapse_btn.GetComponentInChildren<Text>().text = ">";
+        }
+
+        else
+        {
+            anim.SetBool("IsDisplayed", true);
+            Collapse_btn.GetComponentInChildren<Text>().text = "<";
+        }
     }
+  
 
     #endregion
 
