@@ -11,6 +11,8 @@ using TMPro;
 using UnityEngine;
 using Zenject;
 using UnityEngine.UI;
+using System.Collections;
+
 public class SideMenuController : MonoBehaviour
 {
     public TMP_Dropdown AtlasDropDown;
@@ -22,11 +24,17 @@ public class SideMenuController : MonoBehaviour
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
 
+    public delegate void OnROI_Action(IEnumerable<ROI> reg_of_interests, string current_atlas);
+    public static event OnROI_Action OnPlotROI;
+
     public delegate void OnAtlasAction(string atlas_name);
     public static event OnAtlasAction OnChangeAtlas;
 
     public delegate void OnApplyThrAction(double thr_l, double thr_h, bool active);
     public static event OnApplyThrAction ApplyThr_bool;
+
+    public delegate IEnumerator OnApplyThrValueChange(double low_thr, double mid_thr, double high_thr);
+    public static event OnApplyThrValueChange ApplyThr_text;
 
     [Inject]
     private readonly IAtlas atlas;
@@ -37,6 +45,7 @@ public class SideMenuController : MonoBehaviour
     private string Current_Atlas = Atlas.DSK_Atlas;
 
     private IEnumerable<Corelation> Corelations;
+    private IEnumerable<ROI> ROIs;
 
     #region Animator
     public void BoolAnimator(Animator anim)
@@ -84,17 +93,24 @@ public class SideMenuController : MonoBehaviour
         return count;
     }
 
-    public void Left_Hemph_Activation(bool active) => Left_Hemph.SetActive(active);
-
-    public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
-
-    public void Load_Correlation()
+    private string[] FileBrowser()
     {
         var extensions = new[] {
             new ExtensionFilter("CSV Files", "csv" ),
         };
 
         var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+        return path;
+    }
+
+
+    public void Left_Hemph_Activation(bool active) => Left_Hemph.SetActive(active);
+
+    public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
+
+    public void Load_Correlation()
+    {
+        string[] path = FileBrowser();
 
         if (path == null)
             return;
@@ -110,6 +126,16 @@ public class SideMenuController : MonoBehaviour
         }
     }
 
+    public void Load_ROI()
+    {
+        string[] path = FileBrowser();
+
+        if (path == null)
+            return;
+
+
+    }
+   
     public void Test_Correlation()
     {
         switch (AtlasDropDown.value)
@@ -117,19 +143,15 @@ public class SideMenuController : MonoBehaviour
             case 0:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Desikan_Atlas);
                 break;
-
             case 1:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Destrieux_Atlas);
                 break;
-
             case 2:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Craddock_Atlas);
                 break;
-
             case 3:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal116_Atlas);
                 break;
-
             case 4:
                 Corelations = CorrelationGenerator.GenerateRandomCorrelation(atlas.Aal90_Atlas);
                 break;
@@ -137,6 +159,8 @@ public class SideMenuController : MonoBehaviour
 
         OnPlotCorrelation(Corelations, Current_Atlas);
     }
+
+
 
     public void OnAtlasDropDownValueChange(int index)
     {
@@ -169,6 +193,7 @@ public class SideMenuController : MonoBehaviour
         }
     }
 
+    #region Threshold Bool
     public void ShowThrPoints_low(bool active)
     {
         if (NotEmptyRange())
@@ -210,4 +235,48 @@ public class SideMenuController : MonoBehaviour
     {
         return !String.IsNullOrWhiteSpace(Low_range.text) && !String.IsNullOrWhiteSpace(Mid_range.text) && !String.IsNullOrWhiteSpace(High_range.text);
     }
+    #endregion
+    #region Threshold Text
+    public void OnValueChange_Thr_low(string thr_txt)
+    {
+        if (thr_txt == ".")
+            Low_range.text = "0.";
+        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        {
+            var low_thr = Double.Parse(thr_txt);
+            var mid_thr = Double.Parse(Mid_range.text);
+            var high_thr = Double.Parse(High_range.text);
+            StartCoroutine(ApplyThr_text(low_thr, mid_thr, high_thr));
+        }
+    }
+
+    public void OnValueChange_Thr_mid(string thr_txt)
+    {
+        if (thr_txt == ".")
+            Mid_range.text = "0.";
+        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        {
+            var low_thr = Double.Parse(Low_range.text);
+            var mid_thr = Double.Parse(thr_txt);
+            var high_thr = Double.Parse(High_range.text);
+            StartCoroutine(ApplyThr_text(low_thr, mid_thr, high_thr));
+        }
+    }
+    public void OnValueChange_Thr_high(string thr_txt)
+    {
+        if (thr_txt == ".")
+            High_range.text = "0.";
+        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        {
+            var low_thr = Double.Parse(Low_range.text);
+            var mid_thr = Double.Parse(Mid_range.text);
+            var high_thr = Double.Parse(thr_txt);
+            StartCoroutine(ApplyThr_text(low_thr, mid_thr, high_thr));
+        }
+    }
+
+    #endregion
+    
+
+
 }

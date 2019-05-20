@@ -1,5 +1,6 @@
 ﻿using Assets.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -23,8 +24,10 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
         SideMenuController.ApplyThr_bool += ApplyThr_bool;
+        SideMenuController.ApplyThr_text += ApplyThr_text;
     }
 
+    #region Threshold Events
     private void ApplyThr_bool(double thr_l, double thr_h, bool active)
     {
         if (!active)
@@ -32,17 +35,17 @@ public class CorrelationController : MonoBehaviour
             foreach (var relation in Current_Correlations)
             {
                 if (relation.Weight >= thr_l && relation.Weight <= thr_h)
-                    GameObject.Find(relation.PointX + "_" + relation.PointY).SetActive(false);
-            } 
+                    gameObject.GetComponentsInChildren<Transform>(true).Single(a => a.name == relation.PointX + "_" + relation.PointY).gameObject.SetActive(false);
+            }
         }
         else
         {
             var in_active_cor = Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
-                foreach(var cor in in_active_cor)
+                foreach (var cor in in_active_cor)
                 {
-                    if(child.name == cor.PointX + "_" + cor.PointY)
+                    if (child.name == cor.PointX + "_" + cor.PointY)
                     {
                         child.gameObject.SetActive(true);
                     }
@@ -50,6 +53,82 @@ public class CorrelationController : MonoBehaviour
             }
         }
     }
+    IEnumerator ApplyThr_text(double low_thr, double mid_thr, double high_thr)
+    {
+        if (Math.Abs(low_thr - low) > 0.0001)
+        {
+            if (low < low_thr)
+            {
+                ApplyThr_bool(low, low_thr - 0.001f, false);
+            }
+            else
+                ApplyThr_bool(low_thr, low, true);
+
+            low = low_thr;
+            mid_low = (mid + low) / 2;
+            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                foreach (var cor in Current_Correlations)
+                {
+                    if (child.name == cor.PointX + "_" + cor.PointY)
+                    {
+                        var scale = child.transform.localScale;
+                        scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
+
+                        child.transform.localScale = scale;
+                    }
+                }
+            }
+        }
+        if (Math.Abs(mid_thr - mid) > 0.0001)
+        {
+            mid = mid_thr;
+            mid_low = (mid + low) / 2;
+            var cor_thr = Current_Correlations.Where(a => a.Weight > mid_low && a.Weight < mid);
+            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                foreach (var cor in Current_Correlations)
+                {
+                    if (child.name == cor.PointX + "_" + cor.PointY)
+                    {
+                        var scale = child.transform.localScale;
+                        scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
+
+                        child.transform.localScale = scale;
+                    }
+                }
+            }
+        }
+        if (Math.Abs(high_thr - high) > 0.0001)
+        {
+            if (high_thr < high)
+            {
+                ApplyThr_bool(high_thr, high, false);
+            }
+            else
+                ApplyThr_bool(high, high_thr, true);
+            high = high_thr;
+            var cor_thr = Current_Correlations.Where(a => a.Weight >= mid && a.Weight <= high);
+            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                foreach (var cor in Current_Correlations)
+                {
+                    if (child.name == cor.PointX + "_" + cor.PointY)
+                    {
+                        var scale = child.transform.localScale;
+                        scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
+
+                        child.transform.localScale = scale;
+                    }
+                }
+            }
+        }
+
+        yield return new WaitForEndOfFrame();
+
+
+    } 
+    #endregion
 
     private void Update()
     {
@@ -80,6 +159,7 @@ public class CorrelationController : MonoBehaviour
     #region Threshold
     private void FindThresholdMarkers(IEnumerable<Corelation> corelations)
     {
+        low = corelations.First().Weight;
         foreach (var relation in corelations)
         {
             low = FindThresholdMarkers_low(relation.Weight);
@@ -154,7 +234,7 @@ public class CorrelationController : MonoBehaviour
         scale.y = Vector3.Distance(region_start, edge.transform.position);
 
         scale = ConfigureEdgeWeight(relation, edge, scale);
-
+        
         edge.transform.localScale = scale;
 
         edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
@@ -162,25 +242,24 @@ public class CorrelationController : MonoBehaviour
 
     private Vector3 ConfigureEdgeWeight(Corelation relation, GameObject edge, Vector3 scale)
     {
-        if (relation.Weight > low && relation.Weight <= mid_low)
+        if (relation.Weight >= low && relation.Weight <= mid_low)
         {
             scale.x = 0.8f;
             scale.z = 0.8f;
-            SetEdgeColor(edge, Color.blue);
+            SetEdgeColor(edge, Color.yellow);
         }
-        else if (relation.Weight > mid_low && relation.Weight <= mid)
+        if (relation.Weight > mid_low && relation.Weight <= mid)
         {
             scale.x = 2f;
             scale.z = 2f;
-            SetEdgeColor(edge, Color.grey);
+            SetEdgeColor(edge, Color.magenta);
         }
-        if (relation.Weight > mid && relation.Weight <= high)
+        if (relation.Weight > mid && relation.Weight <= high || Math.Abs(mid - high) < 0.00001)
         {
             scale.x = 3f;
             scale.z = 3f;
-            SetEdgeColor(edge, Color.yellow);
+            SetEdgeColor(edge, Color.black);
         }
-
         return scale;
     }
 
@@ -208,7 +287,7 @@ public class CorrelationController : MonoBehaviour
     {
         pointX = GameObject.Find(relation.PointX);
         pointY = GameObject.Find(relation.PointY);
-        pointX.transform.localScale = new Vector3(7, 7, 7);
+
         GatherActivePoints(pointX, pointY);
     }
 
