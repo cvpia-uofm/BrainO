@@ -15,14 +15,18 @@ public class SideMenuController : MonoBehaviour
 {
     public TMP_Dropdown AtlasDropDown;
     public Button Collapse_btn;
+    public InputField Low_range;
+    public InputField Mid_range;
+    public InputField High_range;
 
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
-
     public static event OnPlotAction OnPlotCorrelation;
 
     public delegate void OnAtlasAction(string atlas_name);
-
     public static event OnAtlasAction OnChangeAtlas;
+
+    public delegate void OnApplyThrAction(double thr_l, double thr_h, bool active);
+    public static event OnApplyThrAction ApplyThr_bool;
 
     [Inject]
     private readonly IAtlas atlas;
@@ -61,6 +65,15 @@ public class SideMenuController : MonoBehaviour
         Corelations = new List<Corelation>();
 
         AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
+
+        CorrelationController.UpdateWeightThr += UpdateWeightThr;
+    }
+
+    private void UpdateWeightThr(double low, double mid, double high)
+    {
+        Low_range.text = low.ToString();
+        Mid_range.text = mid.ToString();
+        High_range.text = high.ToString();
     }
 
     private int CountRows(StreamReader reader)
@@ -154,5 +167,47 @@ public class SideMenuController : MonoBehaviour
                 Current_Atlas = Atlas.A90_Atlas;
                 break;
         }
+    }
+
+    public void ShowThrPoints_low(bool active)
+    {
+        if (NotEmptyRange())
+        {
+            var low = Double.Parse(Low_range.text);
+            var mid_low = (low + Double.Parse(Mid_range.text)) / 2;
+
+            ApplyThr_bool(low, mid_low, active);
+        }
+        Low_range.interactable = active;
+    }
+
+    public void ShowThrPoints_mid(bool active)
+    {
+        if (NotEmptyRange())
+        {
+            var mid_low = (Double.Parse(Low_range.text) + Double.Parse(Mid_range.text)) / 2;
+            var mid = Double.Parse(Mid_range.text);
+
+            ApplyThr_bool(mid_low, mid, active);
+        }
+        Mid_range.interactable = active;
+
+    }
+
+    public void ShowThrPoints_high(bool active)
+    {
+        if (NotEmptyRange())
+        {
+            var mid = Double.Parse(Mid_range.text);
+            var high = Double.Parse(High_range.text);
+
+            ApplyThr_bool(mid, high, active);
+        }
+        High_range.interactable = active;
+    }
+
+    private bool NotEmptyRange()
+    {
+        return !String.IsNullOrWhiteSpace(Low_range.text) && !String.IsNullOrWhiteSpace(Mid_range.text) && !String.IsNullOrWhiteSpace(High_range.text);
     }
 }

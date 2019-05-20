@@ -1,5 +1,8 @@
 ﻿using Assets.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
@@ -7,15 +10,45 @@ public class CorrelationController : MonoBehaviour
     private string Current_Atlas;
     private IEnumerable<Corelation> Current_Correlations;
     private List<GameObject> activePoints;
+    private double low, mid, high, mid_low;
 
     public delegate void OnActivateAction();
-
     public static event OnActivateAction ActivateAllPoints;
+
+    public delegate void OnWeightThrUpdateAction(double low, double mid, double high);
+    public static event OnWeightThrUpdateAction UpdateWeightThr;
 
     private void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
+        SideMenuController.ApplyThr_bool += ApplyThr_bool;
+    }
+
+    private void ApplyThr_bool(double thr_l, double thr_h, bool active)
+    {
+        if (!active)
+        {
+            foreach (var relation in Current_Correlations)
+            {
+                if (relation.Weight >= thr_l && relation.Weight <= thr_h)
+                    GameObject.Find(relation.PointX + "_" + relation.PointY).SetActive(false);
+            } 
+        }
+        else
+        {
+            var in_active_cor = Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
+            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
+            {
+                foreach(var cor in in_active_cor)
+                {
+                    if(child.name == cor.PointX + "_" + cor.PointY)
+                    {
+                        child.gameObject.SetActive(true);
+                    }
+                }
+            }
+        }
     }
 
     private void Update()
@@ -28,6 +61,8 @@ public class CorrelationController : MonoBehaviour
     {
         InitPlot(corelations, current_atlas);
 
+        FindThresholdMarkers(corelations);
+
         foreach (var relation in corelations)
         {
             Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY,
@@ -39,7 +74,41 @@ public class CorrelationController : MonoBehaviour
         }
 
         ShowOnlyActivePoints(current_atlas);
+        
     }
+
+    #region Threshold
+    private void FindThresholdMarkers(IEnumerable<Corelation> corelations)
+    {
+        foreach (var relation in corelations)
+        {
+            low = FindThresholdMarkers_low(relation.Weight);
+            high = FindThresholdMarkers_high(relation.Weight);
+        }
+        FindThresholdMarkers_mid();
+        UpdateWeightThr(low, mid, high);
+    }
+
+    private void FindThresholdMarkers_mid()
+    {
+        mid = (high + low) / 2;
+        mid_low = (mid + low) / 2;
+    }
+
+    private double FindThresholdMarkers_high(double weight)
+    {
+        if (weight > high)
+            return weight;
+        return high;
+    }
+
+    private double FindThresholdMarkers_low(double weight)
+    {
+        if (weight < low)
+            return weight;
+        return low;
+    } 
+    #endregion
 
     private void InitPlot(IEnumerable<Corelation> corelations, string current_atlas)
     {
@@ -49,6 +118,13 @@ public class CorrelationController : MonoBehaviour
         transform.parent.position = Vector3.zero;
         transform.parent.rotation = Quaternion.identity;
         transform.parent.localScale = new Vector3(40, 40, 40);
+
+        var points_abr = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>();
+
+        foreach(var point in points_abr)
+        {
+            point.transform.rotation = new Quaternion(0, 180, 0, 0);
+        }
 
         Current_Atlas = current_atlas;
         Current_Correlations = corelations;
@@ -76,11 +152,43 @@ public class CorrelationController : MonoBehaviour
 
         var scale = edge.transform.localScale;
         scale.y = Vector3.Distance(region_start, edge.transform.position);
-        scale.x = (float)relation.Weight;
-        scale.z = (float)relation.Weight;
+
+        scale = ConfigureEdgeWeight(relation, edge, scale);
+
         edge.transform.localScale = scale;
-        
+
         edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
+    }
+
+    private Vector3 ConfigureEdgeWeight(Corelation relation, GameObject edge, Vector3 scale)
+    {
+        if (relation.Weight > low && relation.Weight <= mid_low)
+        {
+            scale.x = 0.8f;
+            scale.z = 0.8f;
+            SetEdgeColor(edge, Color.blue);
+        }
+        else if (relation.Weight > mid_low && relation.Weight <= mid)
+        {
+            scale.x = 2f;
+            scale.z = 2f;
+            SetEdgeColor(edge, Color.grey);
+        }
+        if (relation.Weight > mid && relation.Weight <= high)
+        {
+            scale.x = 3f;
+            scale.z = 3f;
+            SetEdgeColor(edge, Color.yellow);
+        }
+
+        return scale;
+    }
+
+    private static void SetEdgeColor(GameObject edge, Color color)
+    {
+        MaterialPropertyBlock props = new MaterialPropertyBlock();
+        props.SetColor("_Color", color);
+        edge.GetComponent<Renderer>().SetPropertyBlock(props);
     }
 
     private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
