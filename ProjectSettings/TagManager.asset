@@ -12,6 +12,7 @@ TagManager:
   - Craddock_Atlas
   - Aal116_Atlas
   - Aal90_Atlas
+  - Importance_factor
   layers:
   - Default
   - TransparentFX

@@ -12,6 +12,7 @@ using UnityEngine;
 using Zenject;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -132,6 +133,18 @@ public class SideMenuController : MonoBehaviour
 
         if (path == null)
             return;
+        using(var reader = new StreamReader(path[0]))
+        {
+            var raw = reader.ReadToEnd();
+            string[] data = raw.Split('\n');
+            ROIs = MapperFactory<ROI>.Map_CSV(data, MapperEnums.Inputs.ROIs);
+
+            ROIs = ROIs.Where(r => !String.IsNullOrWhiteSpace(r.Importance_factor) || !String.IsNullOrWhiteSpace(r.Region)).ToList();
+           
+
+            if ((ROIs as List<ROI>).Count != 0)
+                OnPlotROI(ROIs, Current_Atlas);
+        }
 
 
     }

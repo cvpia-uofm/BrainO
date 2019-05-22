@@ -18,13 +18,13 @@ namespace TestLib
         static void Main(string[] args)
         {
             
-            using (var reader = new StreamReader(@"C:\Users\KAM\OneDrive - The University of Memphis\Test.csv"))
+            using (var reader = new StreamReader(@"C:\Users\KAM\OneDrive - The University of Memphis\DK_atlas_Visualize.csv"))
             {
 
                 data_1 = reader.ReadToEnd();
                 data = data_1.Split('\n');
             }
-            var regions = MapperFactory<Corelation>.Map_CSV(data,MapperEnums.Inputs.Correlations);
+            var regions = MapperFactory<ROI>.Map_CSV(data,MapperEnums.Inputs.Regions);
 
         }
     }
