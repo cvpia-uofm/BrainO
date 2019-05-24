@@ -199,7 +199,7 @@ public class CorrelationController : MonoBehaviour
         transform.parent.rotation = Quaternion.identity;
         transform.parent.localScale = new Vector3(40, 40, 40);
 
-        var points_abr = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>();
+        var points_abr = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>().ToList();
 
         foreach(var point in points_abr)
         {
@@ -285,17 +285,17 @@ public class CorrelationController : MonoBehaviour
 
     private void Find_Gather_Points(Corelation relation, out GameObject pointX, out GameObject pointY)
     {
-        pointX = GameObject.Find(relation.PointX);
-        pointY = GameObject.Find(relation.PointY);
+        pointX = GameObject.Find(relation.PointX.ToUpper());
+        pointY = GameObject.Find(relation.PointY.ToUpper());
 
         GatherActivePoints(pointX, pointY);
     }
 
     private void GatherActivePoints(GameObject pointX, GameObject pointY)
     {
-        if (!activePoints.Exists(a => a.name == pointX.name))
+        if (!activePoints.Exists(a => a.name == pointX.name.ToUpper()))
             activePoints.Add(pointX);
-        if (!activePoints.Exists(a => a.name == pointY.name))
+        if (!activePoints.Exists(a => a.name == pointY.name.ToUpper()))
             activePoints.Add(pointY);
     }
 

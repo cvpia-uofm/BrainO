@@ -136,7 +136,7 @@ public class PointsController : MonoBehaviour
                 { -X }, { Y }, { Z }, { 1 }
             });
         Func_Area = Instantiate(Resources.Load("Point")) as GameObject;
-        Func_Area.name = region.Abbreviation;
+        Func_Area.name = region.Abbreviation.ToUpper();
 
         Func_Area.tag = atlas_name;
     }
@@ -154,7 +154,7 @@ public class PointsController : MonoBehaviour
     private void Add_Label_to_Point(Regions region, GameObject Func_Area)
     {
         var canvas = Func_Area.transform.Find("Canvas");
-        var textobj = canvas.GetComponentInChildren<TMP_Text>();
+        var textobj = canvas.GetComponentsInChildren<TMP_Text>().Single(a => a.name == "Abbreviation");
         textobj.text = region.Abbreviation;
         pointLabels.Add(textobj);
     }
