@@ -1,5 +1,4 @@
-﻿using Assets.Func_Area_Model;
-using Assets.Models.Interfaces;
+﻿using Assets.Models.Interfaces;
 using System.Collections.Generic;
 
 namespace Assets.Models

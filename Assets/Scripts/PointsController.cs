@@ -1,9 +1,9 @@
-﻿using Assets.Func_Area_Model;
-using Assets.Models;
+﻿using Assets.Models;
 using Assets.Models.Interfaces;
 using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -25,8 +25,17 @@ public class PointsController : MonoBehaviour
     private void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
+        SideMenuController.RestorePoints += RestoreAtlasPoints;
         CorrelationController.ActivateAllPoints += ActivateAllPoints;
         Init_Atlas();
+    }
+
+    private void RestoreAtlasPoints(string atlas_name, IEnumerable<Regions> regions)
+    {
+        var correlations = GameObject.Find("Correlations").GetComponentsInChildren<Transform>(true).Where(a => a.name != "Correlations").ToList();
+
+        Plot(regions, atlas_name);
+
     }
 
     private void Start()

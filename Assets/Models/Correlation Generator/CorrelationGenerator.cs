@@ -1,5 +1,4 @@
-﻿using Assets.Func_Area_Model;
-using AutoMapperFactory;
+﻿using AutoMapperFactory;
 using ExcelFactory;
 using System;
 using System.Collections.Generic;

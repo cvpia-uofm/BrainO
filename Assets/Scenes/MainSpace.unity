@@ -209,7 +209,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &99120667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -229,7 +229,7 @@ RectTransform:
   - {fileID: 740793430}
   - {fileID: 1661441584}
   m_Father: {fileID: 947152796}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1254,7 +1254,7 @@ RectTransform:
   - {fileID: 293266960}
   - {fileID: 1774836237}
   m_Father: {fileID: 947152796}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -3190,8 +3190,8 @@ RectTransform:
   m_Children:
   - {fileID: 2032285372}
   - {fileID: 1202480842}
-  - {fileID: 99120667}
   - {fileID: 359343340}
+  - {fileID: 99120667}
   - {fileID: 200512838}
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -3218,6 +3218,7 @@ MonoBehaviour:
   Low_range: {fileID: 1714430318}
   Mid_range: {fileID: 992527557}
   High_range: {fileID: 1772846684}
+  Right_Panel: {fileID: 99120666}
 --- !u!1 &968232360
 GameObject:
   m_ObjectHideFlags: 0
@@ -5597,11 +5598,11 @@ MonoBehaviour:
     lineCount: 0
     pageCount: 0
     materialCount: 1
-  m_havePropertiesChanged: 0
+  m_havePropertiesChanged: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
+  m_isInputParsingRequired: 1
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:

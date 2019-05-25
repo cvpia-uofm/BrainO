@@ -2,26 +2,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.Func_Area_Model;
 using Assets.Models;
+using Assets.Models.Interfaces;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 public class ROIsController : MonoBehaviour
 {
     IEnumerable<Transform> Atlas_regions;
     IEnumerable<TMP_Text> ROIs_factors;
 
+    [Inject]
+    readonly IGlobal global;
+
     double factor_low, factor_mid, factor_midlow, factor_high;
     private void Awake()
     {
         SideMenuController.OnPlotROI += PlotROIs;
+        SideMenuController.RestorePoints += RemoveROI_lbls;
         BrainController.OnBrainRotate += RotateFactors;
+    }
+
+    private void RemoveROI_lbls(string atlas_name, IEnumerable<Regions> regions)
+    {
+        if (ROIs_factors != null && global.ROIActivated)
+        {
+            foreach (var fac_lbls in ROIs_factors)
+            {
+                fac_lbls.gameObject.SetActive(false);
+            }
+        }
     }
 
     private void RotateFactors(float X, float Y)
     {
-        if (ROIs_factors != null)
+        if (ROIs_factors != null && global.ROIActivated)
         {
             foreach (var fac_lbls in ROIs_factors)
             {

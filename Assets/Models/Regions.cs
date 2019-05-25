@@ -1,4 +1,4 @@
-﻿namespace Assets.Func_Area_Model
+﻿namespace Assets.Models
 {
     public class Regions
     {

@@ -25,6 +25,12 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
         SideMenuController.ApplyThr_bool += ApplyThr_bool;
         SideMenuController.ApplyThr_text += ApplyThr_text;
+        SideMenuController.RestorePoints += RemoveExistingCorrelations;
+    }
+
+    private void RemoveExistingCorrelations(string atlas_name, IEnumerable<Regions> regions)
+    {
+        RemoveExistingCorrelation();
     }
 
     #region Threshold Events
