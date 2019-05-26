@@ -52,7 +52,7 @@ public class ROIsController : MonoBehaviour
         
     }
 
-    private void PlotROIs(IEnumerable<ROI> reg_of_interests, string current_atlas)
+    IEnumerator PlotROIs(IEnumerable<ROI> reg_of_interests, string current_atlas)
     {
         Init_ROI();
         CalculateThresholdROI(reg_of_interests);
@@ -65,6 +65,7 @@ public class ROIsController : MonoBehaviour
                 factor.gameObject.SetActive(true);
                 factor.text = roi.Importance_factor + "%";
                 ScaleColorROI(roi, atlas_region);
+                yield return new WaitForSeconds(0.00001f);
 
             }
         }

@@ -3946,6 +3946,9 @@ MonoBehaviour:
   Low_ROI: {fileID: 1842915839}
   Mid_ROI: {fileID: 98222728}
   High_ROI: {fileID: 1429740002}
+  Low_thr_toggle: {fileID: 1676223216}
+  Mid_thr_toggle: {fileID: 740793431}
+  High_thr_toggle: {fileID: 1661441585}
   Right_Panel_Weight: {fileID: 99120666}
   Right_Panel_ROI: {fileID: 343375422}
 --- !u!1 &968232360

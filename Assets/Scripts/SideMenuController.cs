@@ -24,13 +24,16 @@ public class SideMenuController : MonoBehaviour
     public InputField Low_ROI;
     public InputField Mid_ROI;
     public InputField High_ROI;
+    public Toggle Low_thr_toggle;
+    public Toggle Mid_thr_toggle;
+    public Toggle High_thr_toggle;
     public GameObject Right_Panel_Weight;
     public GameObject Right_Panel_ROI;
 
-    public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
+    public delegate IEnumerator OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
 
-    public delegate void OnROI_Action(IEnumerable<ROI> reg_of_interests, string current_atlas);
+    public delegate IEnumerator OnROI_Action(IEnumerable<ROI> reg_of_interests, string current_atlas);
     public static event OnROI_Action OnPlotROI;
 
     public delegate void OnAtlasAction(string atlas_name);
@@ -159,9 +162,15 @@ public class SideMenuController : MonoBehaviour
             Corelations = MapperFactory<Corelation>.Map_CSV(data, MapperEnums.Inputs.Correlations);
 
             if ((Corelations as List<Corelation>).Count != 0) {
-                Right_Panel_Weight.SetActive(true);
+                
                 global.CorrelationActivated = true;
-                OnPlotCorrelation(Corelations, Current_Atlas);
+
+                StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
+
+                Right_Panel_Weight.SetActive(true);
+                Low_thr_toggle.isOn = true;
+                Mid_thr_toggle.isOn = true;
+                High_thr_toggle.isOn = true;
             }
                 
         }
@@ -185,7 +194,7 @@ public class SideMenuController : MonoBehaviour
             if ((ROIs as List<ROI>).Count != 0)
             {
                 global.ROIActivated = true;
-                OnPlotROI(ROIs, Current_Atlas);
+                StartCoroutine(OnPlotROI(ROIs, Current_Atlas));
             }
                 
         }
@@ -214,7 +223,7 @@ public class SideMenuController : MonoBehaviour
                 break;
         }
 
-        OnPlotCorrelation(Corelations, Current_Atlas);
+        StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
     }
 
 

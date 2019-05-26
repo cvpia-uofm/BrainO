@@ -156,7 +156,7 @@ public class CorrelationController : MonoBehaviour
 
     #region Configure Correlation
 
-    private void PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
+    IEnumerator PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
     {
         InitPlot(corelations, current_atlas);
 
@@ -170,6 +170,7 @@ public class CorrelationController : MonoBehaviour
             Configure_Transformation(relation, edge, region_start, region_end);
 
             Configure_RigidBody_Constraints(pointX, pointY, edge);
+            yield return new WaitForSeconds(0.00001f);
         }
 
         ShowOnlyActivePoints(current_atlas);
