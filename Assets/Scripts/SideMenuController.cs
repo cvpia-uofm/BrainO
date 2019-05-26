@@ -21,7 +21,11 @@ public class SideMenuController : MonoBehaviour
     public InputField Low_range;
     public InputField Mid_range;
     public InputField High_range;
-    public GameObject Right_Panel;
+    public InputField Low_ROI;
+    public InputField Mid_ROI;
+    public InputField High_ROI;
+    public GameObject Right_Panel_Weight;
+    public GameObject Right_Panel_ROI;
 
     public delegate void OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
@@ -32,11 +36,13 @@ public class SideMenuController : MonoBehaviour
     public delegate void OnAtlasAction(string atlas_name);
     public static event OnAtlasAction OnChangeAtlas;
 
-    public delegate void OnApplyThrAction(double thr_l, double thr_h, bool active);
+    public delegate IEnumerator OnApplyThrAction(double thr_l, double thr_h, bool active);
     public static event OnApplyThrAction ApplyThr_bool;
 
     public delegate IEnumerator OnApplyThrValueChange(double low_thr, double mid_thr, double high_thr);
     public static event OnApplyThrValueChange ApplyThr_text;
+
+    
 
     public delegate void OnEscapleAction(string atlas_name, IEnumerable<Regions> regions);
     public static event OnEscapleAction RestorePoints; 
@@ -102,7 +108,7 @@ public class SideMenuController : MonoBehaviour
             {
                 global.CorrelationActivated = false;
                 global.ROIActivated = false;
-                Right_Panel.SetActive(false);
+                Right_Panel_Weight.SetActive(false);
                 RestorePoints(Current_Atlas, Atlas_Regions_dict[AtlasDropDown.value]);
                 
             }
@@ -153,7 +159,7 @@ public class SideMenuController : MonoBehaviour
             Corelations = MapperFactory<Corelation>.Map_CSV(data, MapperEnums.Inputs.Correlations);
 
             if ((Corelations as List<Corelation>).Count != 0) {
-                Right_Panel.SetActive(true);
+                Right_Panel_Weight.SetActive(true);
                 global.CorrelationActivated = true;
                 OnPlotCorrelation(Corelations, Current_Atlas);
             }
@@ -247,24 +253,24 @@ public class SideMenuController : MonoBehaviour
     #region Threshold Bool
     public void ShowThrPoints_low(bool active)
     {
-        if (NotEmptyRange())
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text))
         {
             var low = Double.Parse(Low_range.text);
             var mid_low = (low + Double.Parse(Mid_range.text)) / 2;
 
-            ApplyThr_bool(low, mid_low, active);
+            StartCoroutine(ApplyThr_bool(low, mid_low, active));
         }
         Low_range.interactable = active;
     }
 
     public void ShowThrPoints_mid(bool active)
     {
-        if (NotEmptyRange())
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text))
         {
             var mid_low = (Double.Parse(Low_range.text) + Double.Parse(Mid_range.text)) / 2;
             var mid = Double.Parse(Mid_range.text);
 
-            ApplyThr_bool(mid_low, mid, active);
+            StartCoroutine(ApplyThr_bool(mid_low + 0.001f, mid, active));
         }
         Mid_range.interactable = active;
 
@@ -272,27 +278,27 @@ public class SideMenuController : MonoBehaviour
 
     public void ShowThrPoints_high(bool active)
     {
-        if (NotEmptyRange())
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text))
         {
             var mid = Double.Parse(Mid_range.text);
             var high = Double.Parse(High_range.text);
 
-            ApplyThr_bool(mid, high, active);
+           StartCoroutine(ApplyThr_bool(mid + 0.001f, high, active));
         }
         High_range.interactable = active;
     }
 
-    bool NotEmptyRange()
+    bool NotEmptyRange(string low_txt, string mid_txt, string high_txt)
     {
-        return !String.IsNullOrWhiteSpace(Low_range.text) && !String.IsNullOrWhiteSpace(Mid_range.text) && !String.IsNullOrWhiteSpace(High_range.text);
+        return !String.IsNullOrWhiteSpace(low_txt) && !String.IsNullOrWhiteSpace(mid_txt) && !String.IsNullOrWhiteSpace(high_txt);
     }
     #endregion
-    #region Threshold Text
+    #region Threshold 'Connectivity'
     public void OnValueChange_Thr_low(string thr_txt)
     {
         if (thr_txt == ".")
             Low_range.text = "0.";
-        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text) && thr_txt != "0." && thr_txt != "0")
         {
             var low_thr = Double.Parse(thr_txt);
             var mid_thr = Double.Parse(Mid_range.text);
@@ -305,7 +311,7 @@ public class SideMenuController : MonoBehaviour
     {
         if (thr_txt == ".")
             Mid_range.text = "0.";
-        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text) && thr_txt != "0." && thr_txt != "0")
         {
             var low_thr = Double.Parse(Low_range.text);
             var mid_thr = Double.Parse(thr_txt);
@@ -313,11 +319,12 @@ public class SideMenuController : MonoBehaviour
             StartCoroutine(ApplyThr_text(low_thr, mid_thr, high_thr));
         }
     }
+
     public void OnValueChange_Thr_high(string thr_txt)
     {
         if (thr_txt == ".")
             High_range.text = "0.";
-        if (NotEmptyRange() && thr_txt != "0." && thr_txt != "0")
+        if (NotEmptyRange(Low_range.text, Mid_range.text, High_range.text) && thr_txt != "0." && thr_txt != "0")
         {
             var low_thr = Double.Parse(Low_range.text);
             var mid_thr = Double.Parse(Mid_range.text);
@@ -327,7 +334,17 @@ public class SideMenuController : MonoBehaviour
     }
 
     #endregion
-    
 
+    #region Threshold 'ROIs'
+    public void OnValueChange_Thr_low_ROI(string thr_txt)
+    {
+        if (thr_txt == ".")
+            Low_ROI.text = "0.";
+        if (NotEmptyRange(Low_ROI.text, Mid_ROI.text, High_ROI.text) && thr_txt != "0." && thr_txt != "0")
+        {
+
+        }
+    }
+    #endregion
 
 }

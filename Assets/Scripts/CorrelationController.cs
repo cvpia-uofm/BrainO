@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class CorrelationController : MonoBehaviour
 {
+    private const double epsilon = 0.0001f;
     private string Current_Atlas;
     private IEnumerable<Corelation> Current_Correlations;
     private List<GameObject> activePoints;
@@ -34,14 +35,21 @@ public class CorrelationController : MonoBehaviour
     }
 
     #region Threshold Events
-    private void ApplyThr_bool(double thr_l, double thr_h, bool active)
+    IEnumerator ApplyThr_bool(double thr_l, double thr_h, bool active)
     {
         if (!active)
         {
-            foreach (var relation in Current_Correlations)
+            var in_active_cor = Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
+            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
-                if (relation.Weight >= thr_l && relation.Weight <= thr_h)
-                    gameObject.GetComponentsInChildren<Transform>(true).Single(a => a.name == relation.PointX + "_" + relation.PointY).gameObject.SetActive(false);
+                foreach (var cor in in_active_cor)
+                {
+                    if (child.name == cor.PointX + "_" + cor.PointY)
+                    {
+                        child.gameObject.SetActive(active);
+                        yield return new WaitForSeconds(0.01f);
+                    }
+                }
             }
         }
         else
@@ -53,22 +61,25 @@ public class CorrelationController : MonoBehaviour
                 {
                     if (child.name == cor.PointX + "_" + cor.PointY)
                     {
-                        child.gameObject.SetActive(true);
+                        child.gameObject.SetActive(active);
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
         }
+
+        
     }
     IEnumerator ApplyThr_text(double low_thr, double mid_thr, double high_thr)
     {
-        if (Math.Abs(low_thr - low) > 0.0001)
+        if (Math.Abs(low_thr - low) > epsilon)
         {
             if (low < low_thr)
             {
-                ApplyThr_bool(low, low_thr - 0.001f, false);
+                StartCoroutine(ApplyThr_bool(low, low_thr - 0.001f, false));
             }
             else
-                ApplyThr_bool(low_thr, low, true);
+                StartCoroutine(ApplyThr_bool(low_thr, low, true));
 
             low = low_thr;
             mid_low = (mid + low) / 2;
@@ -82,11 +93,12 @@ public class CorrelationController : MonoBehaviour
                         scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
 
                         child.transform.localScale = scale;
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
         }
-        if (Math.Abs(mid_thr - mid) > 0.0001)
+        if (Math.Abs(mid_thr - mid) > epsilon)
         {
             mid = mid_thr;
             mid_low = (mid + low) / 2;
@@ -101,18 +113,19 @@ public class CorrelationController : MonoBehaviour
                         scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
 
                         child.transform.localScale = scale;
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
         }
-        if (Math.Abs(high_thr - high) > 0.0001)
+        if (Math.Abs(high_thr - high) > epsilon)
         {
             if (high_thr < high)
             {
-                ApplyThr_bool(high_thr, high, false);
+                StartCoroutine(ApplyThr_bool(high_thr + 0.001f, high, false));
             }
             else
-                ApplyThr_bool(high, high_thr, true);
+                StartCoroutine(ApplyThr_bool(high, high_thr, true));
             high = high_thr;
             var cor_thr = Current_Correlations.Where(a => a.Weight >= mid && a.Weight <= high);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
@@ -125,12 +138,13 @@ public class CorrelationController : MonoBehaviour
                         scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
 
                         child.transform.localScale = scale;
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
         }
 
-        yield return new WaitForEndOfFrame();
+        
 
 
     } 
@@ -224,7 +238,7 @@ public class CorrelationController : MonoBehaviour
 
         region_start = pointX.transform.position;
         region_end = pointY.transform.position;
-        edge = Instantiate(Resources.Load("Edge") as GameObject);
+        edge = Instantiate(Resources.LoadAsync("Edge").asset as GameObject);
         edge.name = string.Concat(relation.PointX, "_", relation.PointY);
         edge.transform.parent = transform;
     }
