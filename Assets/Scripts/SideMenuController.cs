@@ -45,10 +45,10 @@ public class SideMenuController : MonoBehaviour
     public delegate IEnumerator OnApplyThrValueChange(double low_thr, double mid_thr, double high_thr);
     public static event OnApplyThrValueChange ApplyThr_text;
 
-    
+
 
     public delegate void OnEscapleAction(string atlas_name, IEnumerable<Regions> regions);
-    public static event OnEscapleAction RestorePoints; 
+    public static event OnEscapleAction RestorePoints;
 
     [Inject]
     readonly IAtlas atlas;
@@ -62,7 +62,6 @@ public class SideMenuController : MonoBehaviour
 
     IEnumerable<Corelation> Corelations;
     IEnumerable<ROI> ROIs;
-    IDictionary<int, IEnumerable<Regions>> Atlas_Regions_dict;
 
     #region Animator
     public void BoolAnimator(Animator anim)
@@ -79,7 +78,7 @@ public class SideMenuController : MonoBehaviour
             Collapse_btn.GetComponentInChildren<Text>().text = "<";
         }
     }
-  
+
 
     #endregion
 
@@ -91,13 +90,21 @@ public class SideMenuController : MonoBehaviour
         Corelations = new List<Corelation>();
 
         AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
-        Atlas_Regions_dict = new Dictionary<int, IEnumerable<Regions>>()
+        global.Atlas_Regions_dict_index = new Dictionary<int, IEnumerable<Regions>>()
         {
-            {0, atlas.Desikan_Atlas },
-            {1, atlas.Destrieux_Atlas },
-            {2, atlas.Craddock_Atlas },
-            {3, atlas.Aal116_Atlas },
-            {4, atlas.Aal90_Atlas }
+            { 0, atlas.Desikan_Atlas },
+            { 1, atlas.Destrieux_Atlas },
+            { 2, atlas.Craddock_Atlas },
+            { 3, atlas.Aal116_Atlas },
+            { 4, atlas.Aal90_Atlas }
+        };
+        global.Atlas_Regions_value_pairs = new Dictionary<string, IEnumerable<Regions>>()
+        {
+            { Atlas.DSK_Atlas,  atlas.Desikan_Atlas},
+            { Atlas.DTX_Atlas, atlas.Destrieux_Atlas },
+            { Atlas.CDK_Atlas, atlas.Craddock_Atlas },
+            { Atlas.A116_Atlas, atlas.Aal116_Atlas },
+            { Atlas.A90_Atlas, atlas.Aal90_Atlas }
         };
 
         CorrelationController.UpdateWeightThr += UpdateWeightThr;
@@ -112,8 +119,8 @@ public class SideMenuController : MonoBehaviour
                 global.CorrelationActivated = false;
                 global.ROIActivated = false;
                 Right_Panel_Weight.SetActive(false);
-                RestorePoints(Current_Atlas, Atlas_Regions_dict[AtlasDropDown.value]);
-                
+                RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
+
             }
         }
     }
@@ -161,8 +168,9 @@ public class SideMenuController : MonoBehaviour
             string[] data = raw.Split('\n');
             Corelations = MapperFactory<Corelation>.Map_CSV(data, MapperEnums.Inputs.Correlations);
 
-            if ((Corelations as List<Corelation>).Count != 0) {
-                
+            if ((Corelations as List<Corelation>).Count != 0)
+            {
+
                 global.CorrelationActivated = true;
 
                 StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
@@ -172,7 +180,7 @@ public class SideMenuController : MonoBehaviour
                 Mid_thr_toggle.isOn = true;
                 High_thr_toggle.isOn = true;
             }
-                
+
         }
     }
 
@@ -182,26 +190,26 @@ public class SideMenuController : MonoBehaviour
 
         if (path == null)
             return;
-        using(var reader = new StreamReader(path[0]))
+        using (var reader = new StreamReader(path[0]))
         {
             var raw = reader.ReadToEnd();
             string[] data = raw.Split('\n');
             ROIs = MapperFactory<ROI>.Map_CSV(data, MapperEnums.Inputs.ROIs);
 
             ROIs = ROIs.Where(r => !String.IsNullOrWhiteSpace(r.Importance_factor) || !String.IsNullOrWhiteSpace(r.Region)).ToList();
-           
+
 
             if ((ROIs as List<ROI>).Count != 0)
             {
                 global.ROIActivated = true;
                 StartCoroutine(OnPlotROI(ROIs, Current_Atlas));
             }
-                
+
         }
 
 
     }
-   
+
     public void Test_Correlation()
     {
         switch (AtlasDropDown.value)
@@ -292,7 +300,7 @@ public class SideMenuController : MonoBehaviour
             var mid = Double.Parse(Mid_range.text);
             var high = Double.Parse(High_range.text);
 
-           StartCoroutine(ApplyThr_bool(mid + 0.001f, high, active));
+            StartCoroutine(ApplyThr_bool(mid + 0.001f, high, active));
         }
         High_range.interactable = active;
     }

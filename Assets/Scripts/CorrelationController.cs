@@ -27,6 +27,13 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.ApplyThr_bool += ApplyThr_bool;
         SideMenuController.ApplyThr_text += ApplyThr_text;
         SideMenuController.RestorePoints += RemoveExistingCorrelations;
+        RegionListController.OnPathAction += RegionListController_OnPathAction;
+    }
+
+    IEnumerator RegionListController_OnPathAction(string region_name)
+    {
+
+        yield return new WaitForSeconds(0.0001f);
     }
 
     private void RemoveExistingCorrelations(string atlas_name, IEnumerable<Regions> regions)
