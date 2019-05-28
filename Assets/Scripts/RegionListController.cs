@@ -19,6 +19,7 @@ public class RegionListController : MonoBehaviour
     public delegate IEnumerator OnPathofRegionAction(string region_name);
     public static event OnPathofRegionAction OnPathAction;
 
+
     [Inject]
     readonly IAtlas atlas;
     [Inject]

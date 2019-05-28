@@ -1,18 +1,26 @@
 ﻿using Assets.Models;
+using Assets.Models.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Zenject;
+using System.Diagnostics.Contracts;
 
 public class CorrelationController : MonoBehaviour
 {
-    private const double epsilon = 0.0001f;
-    private string Current_Atlas;
-    private IEnumerable<Corelation> Current_Correlations;
-    private List<GameObject> activePoints;
-    private double low, mid, high, mid_low;
+    const double epsilon = 0.0001f;
+    string Current_Atlas;
+    IEnumerable<Corelation> Current_Correlations;
+    List<GameObject> activePoints;
+    double low, mid, high, mid_low;
+
+    [Inject]
+    readonly IGlobal global;
+
+    public GameObject Region_obj;
 
     public delegate void OnActivateAction();
     public static event OnActivateAction ActivateAllPoints;
@@ -20,7 +28,10 @@ public class CorrelationController : MonoBehaviour
     public delegate void OnWeightThrUpdateAction(double low, double mid, double high);
     public static event OnWeightThrUpdateAction UpdateWeightThr;
 
-    private void Awake()
+    public delegate IEnumerator OnRegionPathAction(string[] regions);
+    public static event OnRegionPathAction OnPathAction;
+
+    void Awake()
     {
         SideMenuController.OnPlotCorrelation += PlotCorrelations;
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
@@ -32,11 +43,36 @@ public class CorrelationController : MonoBehaviour
 
     IEnumerator RegionListController_OnPathAction(string region_name)
     {
+        foreach(var cor in Current_Correlations)
+        {
+            foreach (Transform con in transform)
+            {
+                if (string.Concat(cor.PointX,"_" ,cor.PointY) == con.name)
+                {
+                    ConfigureEdgeWeight(cor, con.gameObject, Vector3.zero);
+                    break;
+                    
+                }
+            }
+        }
+        if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
+        {
+            foreach(Transform cor in transform)
+            {
+                if(cor.name.Contains(region_name))
+                {
+                    cor.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
+                    var points = cor.name.Split(new char[] { '_' });
+                    yield return StartCoroutine(OnPathAction(points));
+                }
+                
+            }
+        }
 
-        yield return new WaitForSeconds(0.0001f);
+        
     }
 
-    private void RemoveExistingCorrelations(string atlas_name, IEnumerable<Regions> regions)
+    void RemoveExistingCorrelations(string atlas_name, IEnumerable<Regions> regions)
     {
         RemoveExistingCorrelation();
     }
@@ -75,7 +111,7 @@ public class CorrelationController : MonoBehaviour
             }
         }
 
-        
+
     }
     IEnumerator ApplyThr_text(double low_thr, double mid_thr, double high_thr)
     {
@@ -151,13 +187,13 @@ public class CorrelationController : MonoBehaviour
             }
         }
 
-        
 
 
-    } 
+
+    }
     #endregion
 
-    private void Update()
+    void Update()
     {
     }
 
@@ -181,11 +217,11 @@ public class CorrelationController : MonoBehaviour
         }
 
         ShowOnlyActivePoints(current_atlas);
-        
+
     }
 
     #region Threshold
-    private void FindThresholdMarkers(IEnumerable<Corelation> corelations)
+    void FindThresholdMarkers(IEnumerable<Corelation> corelations)
     {
         low = corelations.First().Weight;
         foreach (var relation in corelations)
@@ -197,28 +233,28 @@ public class CorrelationController : MonoBehaviour
         UpdateWeightThr(low, mid, high);
     }
 
-    private void FindThresholdMarkers_mid()
+    void FindThresholdMarkers_mid()
     {
         mid = (high + low) / 2;
         mid_low = (mid + low) / 2;
     }
 
-    private double FindThresholdMarkers_high(double weight)
+    double FindThresholdMarkers_high(double weight)
     {
         if (weight > high)
             return weight;
         return high;
     }
 
-    private double FindThresholdMarkers_low(double weight)
+    double FindThresholdMarkers_low(double weight)
     {
         if (weight < low)
             return weight;
         return low;
-    } 
+    }
     #endregion
 
-    private void InitPlot(IEnumerable<Corelation> corelations, string current_atlas)
+    void InitPlot(IEnumerable<Corelation> corelations, string current_atlas)
     {
         RemoveExistingCorrelation();
         ActivateAllPoints();
@@ -229,7 +265,7 @@ public class CorrelationController : MonoBehaviour
 
         var points_abr = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>().ToList();
 
-        foreach(var point in points_abr)
+        foreach (var point in points_abr)
         {
             point.transform.rotation = new Quaternion(0, 180, 0, 0);
         }
@@ -240,7 +276,7 @@ public class CorrelationController : MonoBehaviour
         activePoints = new List<GameObject>();
     }
 
-    private void Load_Init_Prefab_Edge(Corelation relation, out GameObject pointX, out GameObject pointY, out Vector3 region_start, out Vector3 region_end, out GameObject edge)
+    void Load_Init_Prefab_Edge(Corelation relation, out GameObject pointX, out GameObject pointY, out Vector3 region_start, out Vector3 region_end, out GameObject edge)
     {
         Find_Gather_Points(relation, out pointX, out pointY);
 
@@ -251,7 +287,7 @@ public class CorrelationController : MonoBehaviour
         edge.transform.parent = transform;
     }
 
-    private void Configure_Transformation(Corelation relation, GameObject edge, Vector3 region_start, Vector3 region_end)
+    void Configure_Transformation(Corelation relation, GameObject edge, Vector3 region_start, Vector3 region_end)
     {
         var offset = region_end - region_start;
         var position = (region_start + region_end) / 2;
@@ -262,43 +298,51 @@ public class CorrelationController : MonoBehaviour
         scale.y = Vector3.Distance(region_start, edge.transform.position);
 
         scale = ConfigureEdgeWeight(relation, edge, scale);
-        
+
         edge.transform.localScale = scale;
 
         edge.transform.rotation = Quaternion.FromToRotation(Vector3.up, offset);
     }
 
-    private Vector3 ConfigureEdgeWeight(Corelation relation, GameObject edge, Vector3 scale)
+    Vector3 ConfigureEdgeWeight(Corelation relation, GameObject edge, Vector3 scale)
     {
         if (relation.Weight >= low && relation.Weight <= mid_low)
         {
-            scale.x = 0.8f;
-            scale.z = 0.8f;
+            if (scale != Vector3.zero)
+                scale = Scale(scale, 0.8f, 0.8f);
             SetEdgeColor(edge, Color.yellow);
         }
         if (relation.Weight > mid_low && relation.Weight <= mid)
         {
-            scale.x = 2f;
-            scale.z = 2f;
+            if (scale != Vector3.zero)
+                scale = Scale(scale, 2f, 2f);
             SetEdgeColor(edge, Color.magenta);
         }
         if (relation.Weight > mid && relation.Weight <= high || Math.Abs(mid - high) < 0.00001)
         {
-            scale.x = 3f;
-            scale.z = 3f;
+            if (scale != Vector3.zero)
+                scale = Scale(scale, 3f, 3f);
             SetEdgeColor(edge, Color.black);
         }
         return scale;
     }
 
-    private static void SetEdgeColor(GameObject edge, Color color)
+    Vector3 Scale(Vector3 scale, float x, float z)
+    {
+        scale.x = x;
+        scale.z = z;
+        return scale;
+    }
+
+    static void SetEdgeColor(GameObject edge, Color color)
     {
         MaterialPropertyBlock props = new MaterialPropertyBlock();
         props.SetColor("_Color", color);
+        edge.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
         edge.GetComponent<Renderer>().SetPropertyBlock(props);
     }
 
-    private void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
+    void Configure_RigidBody_Constraints(GameObject pointX, GameObject pointY, GameObject edge)
     {
         pointX.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
         pointY.AddComponent<FixedJoint>().connectedBody = edge.GetComponent<Rigidbody>();
@@ -311,7 +355,7 @@ public class CorrelationController : MonoBehaviour
 
     #region Gather Remove Find Points
 
-    private void Find_Gather_Points(Corelation relation, out GameObject pointX, out GameObject pointY)
+    void Find_Gather_Points(Corelation relation, out GameObject pointX, out GameObject pointY)
     {
         pointX = GameObject.Find(relation.PointX.ToUpper());
         pointY = GameObject.Find(relation.PointY.ToUpper());
@@ -319,7 +363,7 @@ public class CorrelationController : MonoBehaviour
         GatherActivePoints(pointX, pointY);
     }
 
-    private void GatherActivePoints(GameObject pointX, GameObject pointY)
+    void GatherActivePoints(GameObject pointX, GameObject pointY)
     {
         if (!activePoints.Exists(a => a.name == pointX.name.ToUpper()))
             activePoints.Add(pointX);
@@ -327,7 +371,7 @@ public class CorrelationController : MonoBehaviour
             activePoints.Add(pointY);
     }
 
-    private void ShowOnlyActivePoints(string atlas_name)
+    void ShowOnlyActivePoints(string atlas_name)
     {
         var points = GameObject.FindGameObjectsWithTag(atlas_name);
 
@@ -340,7 +384,7 @@ public class CorrelationController : MonoBehaviour
         }
     }
 
-    private void RemoveExistingCorrelation()
+    void RemoveExistingCorrelation()
     {
         if (transform.childCount == 0)
             return;
@@ -351,7 +395,7 @@ public class CorrelationController : MonoBehaviour
         }
     }
 
-    private void Trigger_Existing_Correlation(string atlas_name)
+    void Trigger_Existing_Correlation(string atlas_name)
     {
         if (atlas_name == Current_Atlas)
         {
@@ -364,7 +408,7 @@ public class CorrelationController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void Configure_Current_Correlation(string atlas_name)
+    void Configure_Current_Correlation(string atlas_name)
     {
         activePoints = new List<GameObject>();
         foreach (var relation in Current_Correlations)

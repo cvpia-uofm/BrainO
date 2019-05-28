@@ -17,14 +17,14 @@ public class ROIsController : MonoBehaviour
     readonly IGlobal global;
 
     double factor_low, factor_mid, factor_midlow, factor_high;
-    private void Awake()
+    void Awake()
     {
         SideMenuController.OnPlotROI += PlotROIs;
         SideMenuController.RestorePoints += RemoveROI_lbls;
         BrainController.OnBrainRotate += RotateFactors;
     }
 
-    private void RemoveROI_lbls(string atlas_name, IEnumerable<Regions> regions)
+    void RemoveROI_lbls(string atlas_name, IEnumerable<Regions> regions)
     {
         if (ROIs_factors != null && global.ROIActivated)
         {
@@ -35,7 +35,7 @@ public class ROIsController : MonoBehaviour
         }
     }
 
-    private void RotateFactors(float X, float Y)
+    void RotateFactors(float X, float Y)
     {
         if (ROIs_factors != null && global.ROIActivated)
         {
@@ -47,7 +47,7 @@ public class ROIsController : MonoBehaviour
         }
     }
 
-    private void Start()
+    void Start()
     {
         
     }
@@ -71,7 +71,7 @@ public class ROIsController : MonoBehaviour
         }
     }
 
-    private void ScaleColorROI(ROI roi, Transform atlas_region)
+    void ScaleColorROI(ROI roi, Transform atlas_region)
     {
         if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
         {
@@ -97,13 +97,13 @@ public class ROIsController : MonoBehaviour
         region.GetComponent<Renderer>().SetPropertyBlock(props);
     }
 
-    private void Init_ROI()
+    void Init_ROI()
     {
         Atlas_regions = GameObject.Find("Points").GetComponentsInChildren<Transform>(true);
         ROIs_factors = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
     }
 
-    private void CalculateThresholdROI(IEnumerable<ROI> reg_of_interests)
+    void CalculateThresholdROI(IEnumerable<ROI> reg_of_interests)
     {
         factor_low = ToDouble(reg_of_interests.First().Importance_factor);
         foreach (var roi in reg_of_interests)

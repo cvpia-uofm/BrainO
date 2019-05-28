@@ -4,6 +4,7 @@ using AutoMapperFactory;
 using ExcelFactory;
 using MathNet.Numerics.LinearAlgebra;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -12,9 +13,13 @@ using Zenject;
 
 public class PointsController : MonoBehaviour
 {
-    private IAtlas atlas;
-    private static Matrix<float> rTheta;
-    private List<TMP_Text> pointLabels;
+    IAtlas atlas;
+    [Inject]
+    readonly IGlobal global;
+    static Matrix<float> rTheta;
+    List<TMP_Text> pointLabels;
+
+
 
     [Inject]
     public void Construct(IAtlas _atlas)
@@ -22,23 +27,45 @@ public class PointsController : MonoBehaviour
         atlas = _atlas;
     }
 
-    private void Awake()
+    void Awake()
     {
         SideMenuController.OnChangeAtlas += ChangeAtlas;
         SideMenuController.RestorePoints += RestoreAtlasPoints;
         CorrelationController.ActivateAllPoints += ActivateAllPoints;
+        CorrelationController.OnPathAction += CorrelationController_OnPathAction;
         Init_Atlas();
     }
 
-    private void RestoreAtlasPoints(string atlas_name, IEnumerable<Regions> regions)
+    IEnumerator CorrelationController_OnPathAction(string[] regions)
+    {
+        foreach(var region in global.Current_Region_list)
+        {
+            foreach (Transform child in transform)
+            {
+                if(child.name == region.Abbreviation.ToUpper())
+                {
+                    Add_Color_to_hemp(region, child.gameObject);
+                    break;
+                }
+            }
+        }
+
+        foreach(var region in regions)
+        {
+            var obj = transform.Find(region.ToUpper()).gameObject;
+            obj.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
+            
+        }
+        yield return null;
+    }
+    void RestoreAtlasPoints(string atlas_name, IEnumerable<Regions> regions)
     {
         var correlations = GameObject.Find("Correlations").GetComponentsInChildren<Transform>(true).Where(a => a.name != "Correlations").ToList();
-
         Plot(regions, atlas_name);
 
     }
 
-    private void Start()
+    void Start()
     {
         BrainController.OnBrainRotate += RotateLabels;
         Plot(atlas.Desikan_Atlas, Atlas.DSK_Atlas);
@@ -46,7 +73,7 @@ public class PointsController : MonoBehaviour
 
     #region Events
 
-    private void ChangeAtlas(string atlas_name)
+    void ChangeAtlas(string atlas_name)
     {
         switch (atlas_name)
         {
@@ -72,7 +99,7 @@ public class PointsController : MonoBehaviour
         }
     }
 
-    private void ActivateAllPoints()
+    void ActivateAllPoints()
     {
         foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
         {
@@ -80,7 +107,7 @@ public class PointsController : MonoBehaviour
         }
     }
 
-    private void RotateLabels(float X, float Y)
+    void RotateLabels(float X, float Y)
     {
         foreach (var point in pointLabels)
         {
@@ -93,7 +120,7 @@ public class PointsController : MonoBehaviour
 
     #region Initialize Atlas
 
-    private void Init_Atlas()
+    void Init_Atlas()
     {
         atlas.Desikan_Atlas = LoadAtlas(Atlas.DSK_Atlas);
         atlas.Destrieux_Atlas = LoadAtlas(Atlas.DTX_Atlas);
@@ -102,7 +129,7 @@ public class PointsController : MonoBehaviour
         atlas.Aal90_Atlas = LoadAtlas(Atlas.A90_Atlas);
     }
 
-    private IEnumerable<Regions> LoadAtlas(string atlas_name)
+    IEnumerable<Regions> LoadAtlas(string atlas_name)
     {
         TextAsset data_raw = Resources.Load<TextAsset>(atlas_name);
         string[] data = data_raw.text.Split(new char[] { '\n' });
@@ -113,16 +140,16 @@ public class PointsController : MonoBehaviour
 
     #region Points Configuration
 
-    private void Plot(IEnumerable<Regions> atlas_regions, string atlas_name)
+    void Plot(IEnumerable<Regions> atlas_regions, string atlas_name)
     {
-        Init_Plot();
+        IniPlot(atlas_regions);
 
         foreach (var region in atlas_regions)
         {
             Matrix<float> inputVector;
             GameObject Func_Area;
             Load_Init_Point(region, atlas_name, out inputVector, out Func_Area);
-            Add_Color_to_left_hemp(region, Func_Area);
+            Add_Color_to_hemp(region, Func_Area);
             Add_Label_to_Point(region, Func_Area);
             Set_Tranform_of_Point(atlas_regions, inputVector, Func_Area);
         }
@@ -130,13 +157,15 @@ public class PointsController : MonoBehaviour
         Translate_Points();
     }
 
-    private void Init_Plot()
+    private void IniPlot(IEnumerable<Regions> atlas_regions)
     {
+        global.Current_Region_list = new List<Regions>(atlas_regions);
         RemoveExistingPlot();
         pointLabels = new List<TMP_Text>();
     }
 
-    private void Load_Init_Point(Regions region, string atlas_name, out Matrix<float> inputVector, out GameObject Func_Area)
+
+    void Load_Init_Point(Regions region, string atlas_name, out Matrix<float> inputVector, out GameObject Func_Area)
     {
         float X = (float)region.X;
         float Y = (float)region.Y;
@@ -150,17 +179,23 @@ public class PointsController : MonoBehaviour
         Func_Area.tag = atlas_name;
     }
 
-    private void Add_Color_to_left_hemp(Regions region, GameObject Func_Area)
+    void Add_Color_to_hemp(Regions region, GameObject Func_Area)
     {
-        if (region.Hemisphere.Equals("left"))
+        MaterialPropertyBlock props = new MaterialPropertyBlock();
+        Func_Area.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
+        if (region.Hemisphere.Equals("left") || region.Abbreviation.StartsWith("l", StringComparison.CurrentCulture))
         {
-            MaterialPropertyBlock props = new MaterialPropertyBlock();
             props.SetColor("_Color", Color.red);
+            Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
+        }
+        if (region.Hemisphere.Equals("right") || region.Abbreviation.StartsWith("r", StringComparison.CurrentCulture))
+        {
+            props.SetColor("_Color", Color.blue);
             Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
         }
     }
 
-    private void Add_Label_to_Point(Regions region, GameObject Func_Area)
+    void Add_Label_to_Point(Regions region, GameObject Func_Area)
     {
         var canvas = Func_Area.transform.Find("Canvas");
         var textobj = canvas.GetComponentsInChildren<TMP_Text>().Single(a => a.name == "Abbreviation");
@@ -168,7 +203,7 @@ public class PointsController : MonoBehaviour
         pointLabels.Add(textobj);
     }
 
-    private void Set_Tranform_of_Point(IEnumerable<Regions> atlas_regions, Matrix<float> inputVector, GameObject Func_Area)
+    void Set_Tranform_of_Point(IEnumerable<Regions> atlas_regions, Matrix<float> inputVector, GameObject Func_Area)
     {
         Func_Area.transform.SetParent(this.transform);
 
@@ -180,7 +215,7 @@ public class PointsController : MonoBehaviour
         ScalePoints(Func_Area, atlas_regions.Count());
     }
 
-    private void ScalePoints(GameObject func_Area, int atlas_length)
+    void ScalePoints(GameObject func_Area, int atlas_length)
     {
         if (atlas_length == 68)
         {
@@ -199,13 +234,13 @@ public class PointsController : MonoBehaviour
         }
     }
 
-    private void Translate_Points()
+    void Translate_Points()
     {
         var trans_Vertex = new Vector3(0.7f, 1.7f, 1.3f);
         transform.localPosition = trans_Vertex;
     }
 
-    private void RemoveExistingPlot()
+    void RemoveExistingPlot()
     {
         if (transform.childCount == 0)
             return;
@@ -217,7 +252,7 @@ public class PointsController : MonoBehaviour
         }
     }
 
-    private void SetDaefaultTransform()
+    void SetDaefaultTransform()
     {
         transform.parent.rotation = Quaternion.identity;
         transform.localPosition = Vector3.zero;

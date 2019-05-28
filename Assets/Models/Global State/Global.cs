@@ -14,5 +14,7 @@ namespace Assets.Models.Global_State
 
         public IDictionary<int, IEnumerable<Regions>> Atlas_Regions_dict_index { get; set; }
         public IDictionary<string, IEnumerable<Regions>> Atlas_Regions_value_pairs { get; set; }
+
+        public IEnumerable<Regions> Current_Region_list { get; set; }
     }
 }

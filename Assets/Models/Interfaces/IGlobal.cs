@@ -9,5 +9,7 @@ namespace Assets.Models.Interfaces
         IDictionary<int, IEnumerable<Regions>> Atlas_Regions_dict_index { get; set; }
         IDictionary<string, IEnumerable<Regions>> Atlas_Regions_value_pairs { get; set; }
 
+        IEnumerable<Regions> Current_Region_list { get; set; }
+
     }
 }
