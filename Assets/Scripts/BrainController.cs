@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Assets.Models.Interfaces;
+using UnityEngine;
+using Zenject;
 
 public class BrainController : MonoBehaviour
 {
@@ -8,19 +10,23 @@ public class BrainController : MonoBehaviour
 
     public static event RotationAction OnBrainRotate;
 
+    [Inject]
+    readonly IGlobal global;
+
     private void Start()
     {
     }
 
     private void Update()
     {
+
         Rotation();
-        Scaling();
+        Scaling(); 
     }
 
     private void Scaling()
     {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+        if (Input.GetAxis("Mouse ScrollWheel") > 0f && Input.GetKey(KeyCode.LeftControl))
         {
             if (!gameObject.transform.localScale.Equals(new Vector3(100, 100, 100)))
             {
@@ -28,7 +34,7 @@ public class BrainController : MonoBehaviour
             }
         }
 
-        if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+        if (Input.GetAxis("Mouse ScrollWheel") < 0f && Input.GetKey(KeyCode.LeftControl))
         {
             if (!gameObject.transform.localScale.Equals(new Vector3(40, 40, 40)))
             {
@@ -39,7 +45,7 @@ public class BrainController : MonoBehaviour
 
     private void Rotation()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
         {
             float rotateX = Input.GetAxis("Mouse X") * rotateSpeed * Mathf.Deg2Rad;
             float rotateY = Input.GetAxis("Mouse Y") * rotateSpeed * Mathf.Deg2Rad;

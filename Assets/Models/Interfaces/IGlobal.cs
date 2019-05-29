@@ -10,6 +10,12 @@ namespace Assets.Models.Interfaces
         IDictionary<string, IEnumerable<Regions>> Atlas_Regions_value_pairs { get; set; }
 
         IEnumerable<Regions> Current_Region_list { get; set; }
+        IList<Regions> Current_Active_Regions { get; set; }
+
+        IEnumerable<Corelation> Current_Correlations { get; set; }
+
+        bool MouseOverUI { get; set; }
+
 
     }
 }

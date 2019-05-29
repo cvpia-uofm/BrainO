@@ -13,6 +13,7 @@ using Zenject;
 using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class SideMenuController : MonoBehaviour
 {
@@ -108,8 +109,17 @@ public class SideMenuController : MonoBehaviour
         };
 
         CorrelationController.UpdateWeightThr += UpdateWeightThr;
+        ROIsController.UpdateROIthr += ROIsController_UpdateROIthr;
 
     }
+
+    void ROIsController_UpdateROIthr(double low, double mid, double high)
+    {
+        Low_ROI.text = low.ToString();
+        Mid_ROI.text = mid.ToString();
+        High_ROI.text = high.ToString();
+    }
+
     void Update()
     {
         if (Input.GetKey(KeyCode.Escape))
@@ -123,6 +133,15 @@ public class SideMenuController : MonoBehaviour
 
             }
         }
+
+        if (IsMouseOver())
+        {
+            global.MouseOverUI = true;
+        }
+        else
+            global.MouseOverUI = false;
+
+        
     }
 
     void UpdateWeightThr(double low, double mid, double high)
@@ -202,7 +221,10 @@ public class SideMenuController : MonoBehaviour
             if ((ROIs as List<ROI>).Count != 0)
             {
                 global.ROIActivated = true;
+
                 StartCoroutine(OnPlotROI(ROIs, Current_Atlas));
+
+                Right_Panel_ROI.SetActive(true);
             }
 
         }
@@ -363,5 +385,6 @@ public class SideMenuController : MonoBehaviour
         }
     }
     #endregion
+    bool IsMouseOver() => EventSystem.current.IsPointerOverGameObject();
 
 }

@@ -17,6 +17,9 @@ public class ROIsController : MonoBehaviour
     readonly IGlobal global;
 
     double factor_low, factor_mid, factor_midlow, factor_high;
+
+    public delegate void OnUpdateROIthr(double low, double mid, double high);
+    public static event OnUpdateROIthr UpdateROIthr;
     void Awake()
     {
         SideMenuController.OnPlotROI += PlotROIs;
@@ -69,6 +72,8 @@ public class ROIsController : MonoBehaviour
 
             }
         }
+
+        
     }
 
     void ScaleColorROI(ROI roi, Transform atlas_region)
@@ -115,6 +120,7 @@ public class ROIsController : MonoBehaviour
         }
         factor_mid = (factor_low + factor_high) / 2;
         factor_midlow = (factor_low + factor_mid) / 2;
+        UpdateROIthr(factor_low, factor_mid, factor_high);
     }
 
     double ToDouble(string txt_num)

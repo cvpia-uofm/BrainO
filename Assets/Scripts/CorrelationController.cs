@@ -8,12 +8,12 @@ using TMPro;
 using UnityEngine;
 using Zenject;
 using System.Diagnostics.Contracts;
+using UnityEngine.EventSystems;
 
 public class CorrelationController : MonoBehaviour
 {
     const double epsilon = 0.0001f;
     string Current_Atlas;
-    IEnumerable<Corelation> Current_Correlations;
     List<GameObject> activePoints;
     double low, mid, high, mid_low;
 
@@ -28,8 +28,11 @@ public class CorrelationController : MonoBehaviour
     public delegate void OnWeightThrUpdateAction(double low, double mid, double high);
     public static event OnWeightThrUpdateAction UpdateWeightThr;
 
-    public delegate IEnumerator OnRegionPathAction(string[] regions);
+    public delegate IEnumerator OnRegionPathAction(IEnumerable<Regions> regions);
     public static event OnRegionPathAction OnPathAction;
+
+    public delegate void OnUpdateRegionList(IEnumerable<Regions> atlas_regions);
+    public static event OnUpdateRegionList Update_Regionlist;
 
     void Awake()
     {
@@ -37,42 +40,52 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.OnChangeAtlas += Trigger_Existing_Correlation;
         SideMenuController.ApplyThr_bool += ApplyThr_bool;
         SideMenuController.ApplyThr_text += ApplyThr_text;
-        SideMenuController.RestorePoints += RemoveExistingCorrelations;
+        SideMenuController.RestorePoints += ResetCorrelations;
         RegionListController.OnPathAction += RegionListController_OnPathAction;
+    }
+    void Start()
+    {
+            
     }
 
     IEnumerator RegionListController_OnPathAction(string region_name)
     {
-        foreach(var cor in Current_Correlations)
+        if (global.CorrelationActivated)
         {
-            foreach (Transform con in transform)
+            foreach (var cor in global.Current_Correlations)
             {
-                if (string.Concat(cor.PointX,"_" ,cor.PointY) == con.name)
+                foreach (Transform con in transform)
                 {
-                    ConfigureEdgeWeight(cor, con.gameObject, Vector3.zero);
-                    break;
-                    
+                    if (string.Concat(cor.PointX, "_", cor.PointY) == con.name)
+                    {
+                        ConfigureEdgeWeight(cor, con.gameObject, Vector3.zero);
+                        break;
+
+                    }
                 }
             }
-        }
-        if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
-        {
-            foreach(Transform cor in transform)
+            if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
             {
-                if(cor.name.Contains(region_name))
+                List<Regions> region_path = new List<Regions>();
+                foreach (Transform cor in transform)
                 {
-                    cor.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
-                    var points = cor.name.Split(new char[] { '_' });
-                    yield return StartCoroutine(OnPathAction(points));
+                    if (cor.name.Contains(region_name))
+                    {
+                        cor.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
+
+                        region_path = CollectActiveRegions(global.Current_Correlations.Single(a => a.PointX + "_" + a.PointY == cor.name), region_path).ToList();
+
+                    }
+
                 }
-                
-            }
+                yield return StartCoroutine(OnPathAction(region_path));
+            } 
         }
 
         
     }
 
-    void RemoveExistingCorrelations(string atlas_name, IEnumerable<Regions> regions)
+    void ResetCorrelations(string atlas_name, IEnumerable<Regions> regions)
     {
         RemoveExistingCorrelation();
     }
@@ -82,7 +95,7 @@ public class CorrelationController : MonoBehaviour
     {
         if (!active)
         {
-            var in_active_cor = Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
+            var in_active_cor = global.Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
                 foreach (var cor in in_active_cor)
@@ -97,7 +110,7 @@ public class CorrelationController : MonoBehaviour
         }
         else
         {
-            var in_active_cor = Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
+            var in_active_cor = global.Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
                 foreach (var cor in in_active_cor)
@@ -128,7 +141,7 @@ public class CorrelationController : MonoBehaviour
             mid_low = (mid + low) / 2;
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
-                foreach (var cor in Current_Correlations)
+                foreach (var cor in global.Current_Correlations)
                 {
                     if (child.name == cor.PointX + "_" + cor.PointY)
                     {
@@ -145,10 +158,10 @@ public class CorrelationController : MonoBehaviour
         {
             mid = mid_thr;
             mid_low = (mid + low) / 2;
-            var cor_thr = Current_Correlations.Where(a => a.Weight > mid_low && a.Weight < mid);
+            var cor_thr = global.Current_Correlations.Where(a => a.Weight > mid_low && a.Weight < mid);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
-                foreach (var cor in Current_Correlations)
+                foreach (var cor in global.Current_Correlations)
                 {
                     if (child.name == cor.PointX + "_" + cor.PointY)
                     {
@@ -170,10 +183,10 @@ public class CorrelationController : MonoBehaviour
             else
                 StartCoroutine(ApplyThr_bool(high, high_thr, true));
             high = high_thr;
-            var cor_thr = Current_Correlations.Where(a => a.Weight >= mid && a.Weight <= high);
+            var cor_thr = global.Current_Correlations.Where(a => a.Weight >= mid && a.Weight <= high);
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
-                foreach (var cor in Current_Correlations)
+                foreach (var cor in global.Current_Correlations)
                 {
                     if (child.name == cor.PointX + "_" + cor.PointY)
                     {
@@ -186,10 +199,6 @@ public class CorrelationController : MonoBehaviour
                 }
             }
         }
-
-
-
-
     }
     #endregion
 
@@ -207,6 +216,7 @@ public class CorrelationController : MonoBehaviour
 
         foreach (var relation in corelations)
         {
+            CollectActiveRegions(relation, global.Current_Active_Regions);
             Load_Init_Prefab_Edge(relation, out GameObject pointX, out GameObject pointY,
                 out Vector3 region_start, out Vector3 region_end, out GameObject edge);
 
@@ -217,6 +227,22 @@ public class CorrelationController : MonoBehaviour
         }
 
         ShowOnlyActivePoints(current_atlas);
+        Update_Regionlist(global.Current_Active_Regions);
+
+
+    }
+
+    IList<Regions> CollectActiveRegions(Corelation relation, IList<Regions> regions_storage)
+    {
+        var pointX = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointX);
+        var pointY = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointY);
+
+        if (!regions_storage.Contains(pointX))
+            regions_storage.Add(pointX);
+        if (!regions_storage.Contains(pointY))
+            regions_storage.Add(pointY);
+
+        return regions_storage;
 
     }
 
@@ -271,9 +297,10 @@ public class CorrelationController : MonoBehaviour
         }
 
         Current_Atlas = current_atlas;
-        Current_Correlations = corelations;
+        global.Current_Correlations = corelations;
 
         activePoints = new List<GameObject>();
+        global.Current_Active_Regions = new List<Regions>();
     }
 
     void Load_Init_Prefab_Edge(Corelation relation, out GameObject pointX, out GameObject pointY, out Vector3 region_start, out Vector3 region_end, out GameObject edge)
@@ -411,7 +438,7 @@ public class CorrelationController : MonoBehaviour
     void Configure_Current_Correlation(string atlas_name)
     {
         activePoints = new List<GameObject>();
-        foreach (var relation in Current_Correlations)
+        foreach (var relation in global.Current_Correlations)
         {
             Find_Gather_Points(relation, out GameObject x, out GameObject y);
         }
@@ -419,4 +446,6 @@ public class CorrelationController : MonoBehaviour
     }
 
     #endregion Gather Remove Find Points
+
+    
 }

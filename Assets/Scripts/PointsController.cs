@@ -14,12 +14,12 @@ using Zenject;
 public class PointsController : MonoBehaviour
 {
     IAtlas atlas;
+
     [Inject]
     readonly IGlobal global;
     static Matrix<float> rTheta;
+
     List<TMP_Text> pointLabels;
-
-
 
     [Inject]
     public void Construct(IAtlas _atlas)
@@ -33,31 +33,48 @@ public class PointsController : MonoBehaviour
         SideMenuController.RestorePoints += RestoreAtlasPoints;
         CorrelationController.ActivateAllPoints += ActivateAllPoints;
         CorrelationController.OnPathAction += CorrelationController_OnPathAction;
+        RegionListController.OnFocusPoint += RegionListController_OnFocusPoint;
         Init_Atlas();
     }
 
-    IEnumerator CorrelationController_OnPathAction(string[] regions)
+    void RegionListController_OnFocusPoint(Regions region)
     {
-        foreach(var region in global.Current_Region_list)
+        UnfocusAllRegions();
+        FocusRegion(region);
+    }
+
+    IEnumerator CorrelationController_OnPathAction(IEnumerable<Regions> regions)
+    {
+        UnfocusAllRegions();
+
+        foreach (var region in regions)
+        {
+            FocusRegion(region);
+        }
+        yield return null;
+    }
+
+    void UnfocusAllRegions()
+    {
+        foreach (var region in global.Current_Region_list)
         {
             foreach (Transform child in transform)
             {
-                if(child.name == region.Abbreviation.ToUpper())
+                if (child.name == region.Abbreviation.ToUpper())
                 {
                     Add_Color_to_hemp(region, child.gameObject);
                     break;
                 }
             }
         }
-
-        foreach(var region in regions)
-        {
-            var obj = transform.Find(region.ToUpper()).gameObject;
-            obj.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
-            
-        }
-        yield return null;
     }
+
+    void FocusRegion(Regions region)
+    {
+        var obj = transform.Find(region.Abbreviation.ToUpper()).gameObject;
+        obj.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
+    }
+
     void RestoreAtlasPoints(string atlas_name, IEnumerable<Regions> regions)
     {
         var correlations = GameObject.Find("Correlations").GetComponentsInChildren<Transform>(true).Where(a => a.name != "Correlations").ToList();
