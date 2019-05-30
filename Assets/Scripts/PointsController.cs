@@ -13,6 +13,8 @@ using Zenject;
 
 public class PointsController : MonoBehaviour
 {
+
+    
     IAtlas atlas;
 
     [Inject]
@@ -20,6 +22,9 @@ public class PointsController : MonoBehaviour
     static Matrix<float> rTheta;
 
     List<TMP_Text> pointLabels;
+
+    public GameObject Correlations_obj;
+    public static event SideMenuController.OnROI_Action RestoreROI_Regions;
 
     [Inject]
     public void Construct(IAtlas _atlas)
@@ -29,6 +34,7 @@ public class PointsController : MonoBehaviour
 
     void Awake()
     {
+        BrainController.OnBrainRotate += RotateLabels;
         SideMenuController.OnChangeAtlas += ChangeAtlas;
         SideMenuController.RestorePoints += RestoreAtlasPoints;
         CorrelationController.ActivateAllPoints += ActivateAllPoints;
@@ -37,9 +43,12 @@ public class PointsController : MonoBehaviour
         Init_Atlas();
     }
 
+    
+
     void RegionListController_OnFocusPoint(Regions region)
     {
-        UnfocusAllRegions();
+
+        UnfocusAllRegions(); 
         FocusRegion(region);
     }
 
@@ -56,35 +65,45 @@ public class PointsController : MonoBehaviour
 
     void UnfocusAllRegions()
     {
-        foreach (var region in global.Current_Region_list)
+        if (!global.ROIActivated)
         {
-            foreach (Transform child in transform)
+            foreach (var region in global.Current_Region_list)
             {
-                if (child.name == region.Abbreviation.ToUpper())
+                foreach (Transform child in transform)
                 {
-                    Add_Color_to_hemp(region, child.gameObject);
-                    break;
+                    if (child.name == region.Abbreviation.ToUpper())
+                    {
+                        Add_Color_to_hemp(region, child.gameObject);
+                        ScalePoints(child.gameObject, global.Current_Region_list.Count());
+                        break;
+                    }
                 }
-            }
+            } 
+        }
+        else
+        {
+            StartCoroutine(RestoreROI_Regions(global.Current_rOIs, global.Current_atlas));
         }
     }
+
+   
 
     void FocusRegion(Regions region)
     {
         var obj = transform.Find(region.Abbreviation.ToUpper()).gameObject;
+        obj.transform.localScale = new Vector3(9f, 9f, 9f);
         obj.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
     }
 
     void RestoreAtlasPoints(string atlas_name, IEnumerable<Regions> regions)
     {
-        var correlations = GameObject.Find("Correlations").GetComponentsInChildren<Transform>(true).Where(a => a.name != "Correlations").ToList();
+        var correlations = Correlations_obj.GetComponentsInChildren<Transform>(true).Where(a => a.name != "Correlations").ToList();
         Plot(regions, atlas_name);
 
     }
 
     void Start()
     {
-        BrainController.OnBrainRotate += RotateLabels;
         Plot(atlas.Desikan_Atlas, Atlas.DSK_Atlas);
     }
 
@@ -159,7 +178,7 @@ public class PointsController : MonoBehaviour
 
     void Plot(IEnumerable<Regions> atlas_regions, string atlas_name)
     {
-        IniPlot(atlas_regions);
+        InitPlot(atlas_regions, atlas_name);
 
         foreach (var region in atlas_regions)
         {
@@ -174,11 +193,13 @@ public class PointsController : MonoBehaviour
         Translate_Points();
     }
 
-    private void IniPlot(IEnumerable<Regions> atlas_regions)
+    private void InitPlot(IEnumerable<Regions> atlas_regions, string atlas_name)
     {
         global.Current_Region_list = new List<Regions>(atlas_regions);
+        global.Current_atlas = atlas_name;
         RemoveExistingPlot();
         pointLabels = new List<TMP_Text>();
+
     }
 
 

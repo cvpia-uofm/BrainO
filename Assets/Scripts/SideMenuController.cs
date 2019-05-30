@@ -45,6 +45,7 @@ public class SideMenuController : MonoBehaviour
 
     public delegate IEnumerator OnApplyThrValueChange(double low_thr, double mid_thr, double high_thr);
     public static event OnApplyThrValueChange ApplyThr_text;
+    public static event OnApplyThrValueChange ApplyThr_ROI;
 
 
 
@@ -124,14 +125,20 @@ public class SideMenuController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape))
         {
-            if (global.CorrelationActivated || global.ROIActivated)
-            {
-                global.CorrelationActivated = false;
-                global.ROIActivated = false;
-                Right_Panel_Weight.SetActive(false);
-                RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
+            global.CorrelationActivated = false;
+            global.ROIActivated = false;
+            global.AnyRegionSelected = false;
+            Right_Panel_Weight.SetActive(false);
+            Right_Panel_ROI.SetActive(false);
+            RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
+            //if (global.CorrelationActivated || global.ROIActivated)
+            //{
+            //    global.CorrelationActivated = false;
+            //    global.ROIActivated = false;
+            //    Right_Panel_Weight.SetActive(false);
+            //    RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
 
-            }
+            //}
         }
 
         if (IsMouseOver())
@@ -381,7 +388,34 @@ public class SideMenuController : MonoBehaviour
             Low_ROI.text = "0.";
         if (NotEmptyRange(Low_ROI.text, Mid_ROI.text, High_ROI.text) && thr_txt != "0." && thr_txt != "0")
         {
-
+            var low_thr = Double.Parse(thr_txt);
+            var mid_thr = Double.Parse(Mid_ROI.text);
+            var high_thr = Double.Parse(High_ROI.text);
+            StartCoroutine(ApplyThr_ROI(low_thr, mid_thr, high_thr));
+        }
+    }
+    public void OnValueChange_Thr_mid_ROI(string thr_txt)
+    {
+        if (thr_txt == ".")
+            Mid_ROI.text = "0.";
+        if (NotEmptyRange(Low_ROI.text, Mid_ROI.text, High_ROI.text) && thr_txt != "0." && thr_txt != "0")
+        {
+            var low_thr = Double.Parse(Low_ROI.text);
+            var mid_thr = Double.Parse(thr_txt);
+            var high_thr = Double.Parse(High_ROI.text);
+            StartCoroutine(ApplyThr_ROI(low_thr, mid_thr, high_thr));
+        }
+    }
+    public void OnValueChange_Thr_high_ROI(string thr_txt)
+    {
+        if (thr_txt == ".")
+            High_ROI.text = "0.";
+        if (NotEmptyRange(Low_ROI.text, Mid_ROI.text, High_ROI.text) && thr_txt != "0." && thr_txt != "0")
+        {
+            var low_thr = Double.Parse(Low_ROI.text);
+            var mid_thr = Double.Parse(Mid_ROI.text);
+            var high_thr = Double.Parse(thr_txt);
+            StartCoroutine(ApplyThr_ROI(low_thr, mid_thr, high_thr));
         }
     }
     #endregion

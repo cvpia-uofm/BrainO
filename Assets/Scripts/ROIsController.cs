@@ -10,6 +10,8 @@ using Zenject;
 
 public class ROIsController : MonoBehaviour
 {
+    public GameObject Points_obj;
+
     IEnumerable<Transform> Atlas_regions;
     IEnumerable<TMP_Text> ROIs_factors;
 
@@ -18,14 +20,82 @@ public class ROIsController : MonoBehaviour
 
     double factor_low, factor_mid, factor_midlow, factor_high;
 
+    double EPSILON = 0.01f;
+
     public delegate void OnUpdateROIthr(double low, double mid, double high);
     public static event OnUpdateROIthr UpdateROIthr;
     void Awake()
     {
         SideMenuController.OnPlotROI += PlotROIs;
         SideMenuController.RestorePoints += RemoveROI_lbls;
+        SideMenuController.ApplyThr_ROI += SideMenuController_ApplyThr_ROI;
         BrainController.OnBrainRotate += RotateFactors;
+        PointsController.RestoreROI_Regions += PointsController_RestoreROI_Regions;
+        
     }
+
+    IEnumerator PointsController_RestoreROI_Regions(IEnumerable<ROI> reg_of_interests, string current_atlas)
+    {
+        StartCoroutine(PlotROIs(reg_of_interests, current_atlas));
+        yield return null;
+    }
+
+    #region Apply Threshold ROIs
+    IEnumerator SideMenuController_ApplyThr_ROI(double low_thr, double mid_thr, double high_thr)
+    {
+        if (Math.Abs(low_thr - factor_low) > EPSILON)
+        {
+            factor_low = low_thr;
+            factor_midlow = (factor_mid + factor_low) / 2;
+
+            foreach (var roi in global.Current_rOIs)
+            {
+                foreach (Transform point in Points_obj.transform)
+                {
+                    if (roi.Region.ToUpper() == point.name)
+                    {
+                        ScaleColorROI(roi, point);
+                        yield return new WaitForSeconds(0.0000001f);
+                    }
+                }
+            }
+        }
+
+        if (Math.Abs(mid_thr - factor_mid) > EPSILON)
+        {
+            factor_mid = mid_thr;
+            factor_midlow = (factor_mid + factor_low) / 2;
+
+            foreach (var roi in global.Current_rOIs)
+            {
+                foreach (Transform point in Points_obj.transform)
+                {
+                    if (roi.Region.ToUpper() == point.name)
+                    {
+                        ScaleColorROI(roi, point);
+                        yield return new WaitForSeconds(0.0000001f);
+                    }
+                }
+            }
+        }
+
+        if (Math.Abs(high_thr - factor_high) > EPSILON)
+        {
+            factor_high = high_thr;
+            foreach (var roi in global.Current_rOIs)
+            {
+                foreach (Transform point in Points_obj.transform)
+                {
+                    if (roi.Region.ToUpper() == point.name)
+                    {
+                        ScaleColorROI(roi, point);
+                        yield return new WaitForSeconds(0.0000001f);
+                    }
+                }
+            }
+        }
+    } 
+    #endregion
 
     void RemoveROI_lbls(string atlas_name, IEnumerable<Regions> regions)
     {
@@ -52,12 +122,12 @@ public class ROIsController : MonoBehaviour
 
     void Start()
     {
-        
+          
     }
 
     IEnumerator PlotROIs(IEnumerable<ROI> reg_of_interests, string current_atlas)
     {
-        Init_ROI();
+        Init_ROI(reg_of_interests);
         CalculateThresholdROI(reg_of_interests);
         foreach (var roi in reg_of_interests)
         {
@@ -102,10 +172,11 @@ public class ROIsController : MonoBehaviour
         region.GetComponent<Renderer>().SetPropertyBlock(props);
     }
 
-    void Init_ROI()
+    void Init_ROI(IEnumerable<ROI> reg_of_interests)
     {
-        Atlas_regions = GameObject.Find("Points").GetComponentsInChildren<Transform>(true);
-        ROIs_factors = GameObject.Find("Points").GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
+        Atlas_regions = Points_obj.GetComponentsInChildren<Transform>(true);
+        ROIs_factors = Points_obj.GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
+        global.Current_rOIs = reg_of_interests.ToList();
     }
 
     void CalculateThresholdROI(IEnumerable<ROI> reg_of_interests)
@@ -120,7 +191,11 @@ public class ROIsController : MonoBehaviour
         }
         factor_mid = (factor_low + factor_high) / 2;
         factor_midlow = (factor_low + factor_mid) / 2;
-        UpdateROIthr(factor_low, factor_mid, factor_high);
+
+        if (!global.AnyRegionSelected)
+        {
+            UpdateROIthr(factor_low, factor_mid, factor_high); 
+        }
     }
 
     double ToDouble(string txt_num)

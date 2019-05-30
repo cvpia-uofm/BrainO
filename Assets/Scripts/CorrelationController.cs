@@ -41,29 +41,18 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.ApplyThr_bool += ApplyThr_bool;
         SideMenuController.ApplyThr_text += ApplyThr_text;
         SideMenuController.RestorePoints += ResetCorrelations;
-        RegionListController.OnPathAction += RegionListController_OnPathAction;
+        RegionListController.OnRegionSelected += RegionListController_OnRegionSelected;
     }
     void Start()
     {
             
     }
 
-    IEnumerator RegionListController_OnPathAction(string region_name)
+    IEnumerator RegionListController_OnRegionSelected(string region_name)
     {
         if (global.CorrelationActivated)
         {
-            foreach (var cor in global.Current_Correlations)
-            {
-                foreach (Transform con in transform)
-                {
-                    if (string.Concat(cor.PointX, "_", cor.PointY) == con.name)
-                    {
-                        ConfigureEdgeWeight(cor, con.gameObject, Vector3.zero);
-                        break;
-
-                    }
-                }
-            }
+            SetEdgeWeightstoDefault();
             if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
             {
                 List<Regions> region_path = new List<Regions>();
@@ -79,10 +68,26 @@ public class CorrelationController : MonoBehaviour
 
                 }
                 yield return StartCoroutine(OnPathAction(region_path));
-            } 
+            }
         }
 
-        
+
+    }
+
+    void SetEdgeWeightstoDefault()
+    {
+        foreach (var cor in global.Current_Correlations)
+        {
+            foreach (Transform con in transform)
+            {
+                if (string.Concat(cor.PointX, "_", cor.PointY) == con.name)
+                {
+                    ConfigureEdgeWeight(cor, con.gameObject, Vector3.zero);
+                    break;
+
+                }
+            }
+        }
     }
 
     void ResetCorrelations(string atlas_name, IEnumerable<Regions> regions)
@@ -223,7 +228,7 @@ public class CorrelationController : MonoBehaviour
             Configure_Transformation(relation, edge, region_start, region_end);
 
             Configure_RigidBody_Constraints(pointX, pointY, edge);
-            yield return new WaitForSeconds(0.00001f);
+            yield return new WaitForSeconds(0.000000001f);
         }
 
         ShowOnlyActivePoints(current_atlas);
@@ -337,19 +342,19 @@ public class CorrelationController : MonoBehaviour
         {
             if (scale != Vector3.zero)
                 scale = Scale(scale, 0.8f, 0.8f);
-            SetEdgeColor(edge, Color.yellow);
+            SetEdgeColor(edge, Color.black);
         }
         if (relation.Weight > mid_low && relation.Weight <= mid)
         {
             if (scale != Vector3.zero)
                 scale = Scale(scale, 2f, 2f);
-            SetEdgeColor(edge, Color.magenta);
+            SetEdgeColor(edge, Color.blue);
         }
         if (relation.Weight > mid && relation.Weight <= high || Math.Abs(mid - high) < 0.00001)
         {
             if (scale != Vector3.zero)
                 scale = Scale(scale, 3f, 3f);
-            SetEdgeColor(edge, Color.black);
+            SetEdgeColor(edge, Color.yellow);
         }
         return scale;
     }

@@ -11,6 +11,9 @@ namespace Assets.Models.Global_State
     {
         public bool CorrelationActivated { get; set; }
         public bool ROIActivated { get; set; }
+        public bool AnyRegionSelected { get; set; }
+
+        public string Current_atlas { get; set; }
 
         public IDictionary<int, IEnumerable<Regions>> Atlas_Regions_dict_index { get; set; }
         public IDictionary<string, IEnumerable<Regions>> Atlas_Regions_value_pairs { get; set; }
@@ -19,6 +22,8 @@ namespace Assets.Models.Global_State
         public IList<Regions> Current_Active_Regions { get; set; }
 
         public IEnumerable<Corelation> Current_Correlations { get; set; }
+
+        public IList<ROI> Current_rOIs { get; set; }
 
         public bool MouseOverUI { get; set; }
     }

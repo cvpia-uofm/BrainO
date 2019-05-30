@@ -18,7 +18,7 @@ public class RegionListController : MonoBehaviour
     public InputField SearchField;
 
     public delegate IEnumerator OnPathofRegionAction(string region_name);
-    public static event OnPathofRegionAction OnPathAction;
+    public static event OnPathofRegionAction OnRegionSelected;
 
     public delegate void OnFocusRegion(Regions region);
     public static event OnFocusRegion OnFocusPoint;
@@ -102,12 +102,13 @@ public class RegionListController : MonoBehaviour
 
     void ShowPathofRegion(string region_name)
     {
+        global.AnyRegionSelected = true;
         if (!global.CorrelationActivated)
         {
             OnFocusPoint(global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == region_name.ToUpper()));
             return;
         }
-        StartCoroutine(OnPathAction(region_name));
+        StartCoroutine(OnRegionSelected(region_name));
     }
 
     public void OnSearch(string txt)
