@@ -42,7 +42,30 @@ public class CorrelationController : MonoBehaviour
         SideMenuController.ApplyThr_text += ApplyThr_text;
         SideMenuController.RestorePoints += ResetCorrelations;
         RegionListController.OnRegionSelected += RegionListController_OnRegionSelected;
+        RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
     }
+
+    void RegionListController_RestorePreviousStateofRegion(string region_name)
+    {
+        if (global.CorrelationActivated)
+        {
+            var region = Region_obj.transform.Find(region_name.ToUpper());
+            var rbs = region.GetComponents<FixedJoint>();
+
+            foreach (var rb in rbs)
+            {
+                var cb = rb.connectedBody.gameObject;
+
+                foreach(var cor in global.Current_Correlations)
+                {
+                    if (cb.name == cor.PointX + "_" + cor.PointY)
+                        ConfigureEdgeWeight(cor, cb, Vector3.zero);
+                }
+                
+            } 
+        }
+    }
+
     void Start()
     {
             

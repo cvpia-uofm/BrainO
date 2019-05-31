@@ -61,9 +61,8 @@ public class RegionListController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl))
         {
-            
             if (SelectedItem != null)
             {
                 if (SelectedItem.name == "ItemPrefab(Clone)")
@@ -74,7 +73,7 @@ public class RegionListController : MonoBehaviour
             }
             if (PreviousSelectedItem == null)
                 return;
-                if (PreviousSelectedItem.name == "ItemPrefab(Clone)")
+            if (PreviousSelectedItem.name == "ItemPrefab(Clone)")
             {
                 if (SelectedItem == null || SelectedItem.name != "ItemPrefab(Clone)")
                 {
@@ -82,7 +81,7 @@ public class RegionListController : MonoBehaviour
 
                     if (true)
                     {
-                        RestorePreviousStateofRegion(region_name); 
+                        RestorePreviousStateofRegion(region_name);
                     }
                 }
             }
@@ -90,9 +89,6 @@ public class RegionListController : MonoBehaviour
         }
 
     }
-
-
-
 
     void Start()
     {
@@ -137,18 +133,16 @@ public class RegionListController : MonoBehaviour
 
     void SelectRegionAction(string region_name)
     {
-        var roi = global.Current_rOIs.SingleOrDefault(a => a.Region.ToLower() == region_name.ToLower());
-
         global.AnyRegionSelected = true;
 
         if (!global.CorrelationActivated && !global.ROIActivated)
         {
             OnFocusPoint(global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == region_name.ToUpper()));
-            Prev_Sel_rOI = roi;
             return;
         }
         if (global.ROIActivated && !global.CorrelationActivated)
         {
+            var roi = global.Current_rOIs.SingleOrDefault(a => a.Region.ToLower() == region_name.ToLower());
             OnFocus_rOI(roi, Prev_Sel_rOI);
             Prev_Sel_rOI = roi;
             return;
@@ -171,6 +165,6 @@ public class RegionListController : MonoBehaviour
     }
 
     GameObject SelectedItem => EventSystem.current.currentSelectedGameObject;
-    GameObject PreviousSelectedItem = null;
+    GameObject PreviousSelectedItem;
 
 }

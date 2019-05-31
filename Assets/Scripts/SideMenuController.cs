@@ -222,7 +222,7 @@ public class SideMenuController : MonoBehaviour
             string[] data = raw.Split('\n');
             ROIs = MapperFactory<ROI>.Map_CSV(data, MapperEnums.Inputs.ROIs);
 
-            ROIs = ROIs.Where(r => !String.IsNullOrWhiteSpace(r.Importance_factor) || !String.IsNullOrWhiteSpace(r.Region)).ToList();
+            ROIs = ROIs.Where(r => !string.IsNullOrWhiteSpace(r.Importance_factor) || !string.IsNullOrWhiteSpace(r.Region)).ToList();
 
 
             if ((ROIs as List<ROI>).Count != 0)

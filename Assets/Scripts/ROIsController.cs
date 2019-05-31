@@ -60,7 +60,6 @@ public class ROIsController : MonoBehaviour
 
     void RegionListController_RestorePreviousStateofRegion(string region_name)
     {
-        
         if (global.ROIActivated && !global.CorrelationActivated)
         {
             FindandRescaleRegions(region_name);
@@ -84,7 +83,7 @@ public class ROIsController : MonoBehaviour
 
     void FindandRescaleRegions(string region_name)
     {
-        var region_roi = global.Current_rOIs.Single(a => a.Region == region_name);
+        var region_roi = global.Current_rOIs.Single(a => a.Region.ToLower() == region_name.ToLower());
         var region_roi_obj = Points_obj.transform.Find(region_name.ToUpper());
 
         ScaleColorROI(region_roi, region_roi_obj);
