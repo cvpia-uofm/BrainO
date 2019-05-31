@@ -2031,6 +2031,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Points_obj: {fileID: 275348629}
+  Correlations_obj: {fileID: 1285888774}
 --- !u!1 &387979147
 GameObject:
   m_ObjectHideFlags: 0
@@ -5069,7 +5070,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1769385797}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999986
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5573,7 +5574,7 @@ MonoBehaviour:
   m_Content: {fileID: 1912280721}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 1
+  m_MovementType: 2
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135

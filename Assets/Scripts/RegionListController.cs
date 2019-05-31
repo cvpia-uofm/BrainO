@@ -23,11 +23,18 @@ public class RegionListController : MonoBehaviour
     public delegate void OnFocusRegion(Regions region);
     public static event OnFocusRegion OnFocusPoint;
 
+    public delegate void OnFocusROI(ROI sel_rOI, ROI prev_sel_rOi);
+    public static event OnFocusROI OnFocus_rOI;
+
+    public delegate void OnRestorePreviousState(string region_name);
+    public static event OnRestorePreviousState RestorePreviousStateofRegion;
 
     [Inject]
     readonly IAtlas atlas;
     [Inject]
     readonly IGlobal global;
+
+    ROI Prev_Sel_rOI = null;
 
     void Awake()
     {
@@ -36,6 +43,7 @@ public class RegionListController : MonoBehaviour
         CorrelationController.Update_Regionlist += CorrelationController_Update_Regionlist;
 
     }
+
 
     void SideMenuController_RestorePoints(string atlas_name, IEnumerable<Regions> regions)
     {
@@ -53,13 +61,39 @@ public class RegionListController : MonoBehaviour
 
     void Update()
     {
-        if (IsMouseOver())
+        if (Input.GetMouseButton(0))
         {
-            global.MouseOverUI = true;
+            
+            if (SelectedItem != null)
+            {
+                if (SelectedItem.name == "ItemPrefab(Clone)")
+                {
+                    PreviousSelectedItem = SelectedItem;
+                    return;
+                }
+            }
+            if (PreviousSelectedItem == null)
+                return;
+                if (PreviousSelectedItem.name == "ItemPrefab(Clone)")
+            {
+                if (SelectedItem == null || SelectedItem.name != "ItemPrefab(Clone)")
+                {
+                    string region_name = PreviousSelectedItem.GetComponentInChildren<Text>().text;
+
+                    if (true)
+                    {
+                        RestorePreviousStateofRegion(region_name); 
+                    }
+                }
+            }
+
         }
-        else
-            global.MouseOverUI = false;
+
     }
+
+
+
+
     void Start()
     {
         Populate_Region_list(atlas.Desikan_Atlas);
@@ -72,7 +106,7 @@ public class RegionListController : MonoBehaviour
 
     void Populate_Region_list(IEnumerable<Regions> atlas_regions)
     {
-        foreach(Transform ext_region in Content.transform)
+        foreach (Transform ext_region in Content.transform)
         {
             Destroy(ext_region.gameObject);
         }
@@ -86,6 +120,7 @@ public class RegionListController : MonoBehaviour
 
     void Construct_Region_for_view(Regions region)
     {
+
         var item = Instantiate(ItemPrefab.gameObject) as GameObject;
         var region_name_item = item.GetComponentsInChildren<Text>().SingleOrDefault(a => a.name == "Region_name");
 
@@ -95,17 +130,27 @@ public class RegionListController : MonoBehaviour
         //region_weight_item.gameObject.SetActive(false);
 
         var btn_comp = item.GetComponent<Button>();
-        btn_comp.onClick.AddListener(delegate { ShowPathofRegion(region_name_item.text); });
+        btn_comp.onClick.AddListener(delegate { SelectRegionAction(region_name_item.text); });
 
         item.transform.SetParent(Content.transform);
     }
 
-    void ShowPathofRegion(string region_name)
+    void SelectRegionAction(string region_name)
     {
+        var roi = global.Current_rOIs.SingleOrDefault(a => a.Region.ToLower() == region_name.ToLower());
+
         global.AnyRegionSelected = true;
-        if (!global.CorrelationActivated)
+
+        if (!global.CorrelationActivated && !global.ROIActivated)
         {
             OnFocusPoint(global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == region_name.ToUpper()));
+            Prev_Sel_rOI = roi;
+            return;
+        }
+        if (global.ROIActivated && !global.CorrelationActivated)
+        {
+            OnFocus_rOI(roi, Prev_Sel_rOI);
+            Prev_Sel_rOI = roi;
             return;
         }
         StartCoroutine(OnRegionSelected(region_name));
@@ -125,5 +170,7 @@ public class RegionListController : MonoBehaviour
         Populate_Region_list(result);
     }
 
-    bool IsMouseOver() => EventSystem.current.IsPointerOverGameObject();
+    GameObject SelectedItem => EventSystem.current.currentSelectedGameObject;
+    GameObject PreviousSelectedItem = null;
+
 }

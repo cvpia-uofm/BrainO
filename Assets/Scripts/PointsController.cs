@@ -24,7 +24,8 @@ public class PointsController : MonoBehaviour
     List<TMP_Text> pointLabels;
 
     public GameObject Correlations_obj;
-    public static event SideMenuController.OnROI_Action RestoreROI_Regions;
+    public delegate void OnRestoreROI(ROI rOI);
+    public static event OnRestoreROI RestoreROI;
 
     [Inject]
     public void Construct(IAtlas _atlas)
@@ -47,14 +48,13 @@ public class PointsController : MonoBehaviour
 
     void RegionListController_OnFocusPoint(Regions region)
     {
-
-        UnfocusAllRegions(); 
+        UnfocusRegions(); 
         FocusRegion(region);
     }
 
     IEnumerator CorrelationController_OnPathAction(IEnumerable<Regions> regions)
     {
-        UnfocusAllRegions();
+        UnfocusRegions();
 
         foreach (var region in regions)
         {
@@ -63,7 +63,7 @@ public class PointsController : MonoBehaviour
         yield return null;
     }
 
-    void UnfocusAllRegions()
+    void UnfocusRegions()
     {
         if (!global.ROIActivated)
         {
@@ -79,10 +79,6 @@ public class PointsController : MonoBehaviour
                     }
                 }
             } 
-        }
-        else
-        {
-            StartCoroutine(RestoreROI_Regions(global.Current_rOIs, global.Current_atlas));
         }
     }
 

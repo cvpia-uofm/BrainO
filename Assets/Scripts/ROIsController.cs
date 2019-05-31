@@ -11,6 +11,7 @@ using Zenject;
 public class ROIsController : MonoBehaviour
 {
     public GameObject Points_obj;
+    public GameObject Correlations_obj;
 
     IEnumerable<Transform> Atlas_regions;
     IEnumerable<TMP_Text> ROIs_factors;
@@ -24,21 +25,79 @@ public class ROIsController : MonoBehaviour
 
     public delegate void OnUpdateROIthr(double low, double mid, double high);
     public static event OnUpdateROIthr UpdateROIthr;
+
+   
+
     void Awake()
     {
         SideMenuController.OnPlotROI += PlotROIs;
         SideMenuController.RestorePoints += RemoveROI_lbls;
         SideMenuController.ApplyThr_ROI += SideMenuController_ApplyThr_ROI;
         BrainController.OnBrainRotate += RotateFactors;
-        PointsController.RestoreROI_Regions += PointsController_RestoreROI_Regions;
+        PointsController.RestoreROI += PointsController_RestoreROI;
+        RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
+        RegionListController.OnFocus_rOI += RegionListController_OnFocus_rOI;
         
     }
 
-    IEnumerator PointsController_RestoreROI_Regions(IEnumerable<ROI> reg_of_interests, string current_atlas)
+    void RegionListController_OnFocus_rOI(ROI sel_rOI, ROI prev_sel_rOi)
     {
-        StartCoroutine(PlotROIs(reg_of_interests, current_atlas));
-        yield return null;
+        if(prev_sel_rOi != null)
+        {
+            PointsController_RestoreROI(prev_sel_rOi);
+            FocusRegion(sel_rOI);
+            return;
+        }
+        FocusRegion(sel_rOI);
     }
+
+
+    void PointsController_RestoreROI(ROI rOI)
+    {
+        var region_roi_obj = Points_obj.transform.Find(rOI.Region.ToUpper());
+        ScaleColorROI(rOI, region_roi_obj);
+    }
+
+    void RegionListController_RestorePreviousStateofRegion(string region_name)
+    {
+        
+        if (global.ROIActivated && !global.CorrelationActivated)
+        {
+            FindandRescaleRegions(region_name);
+            return;
+        }
+        if (global.ROIActivated && global.CorrelationActivated)
+        {
+            var roi_cors = Correlations_obj.transform.GetComponentsInChildren<Transform>().Where(a => a.name.Contains(region_name));
+
+            foreach(var roi_cor in roi_cors)
+            {
+                var roi_names = roi_cor.name.Split('_');
+
+                foreach(var roi_name in roi_names)
+                {
+                    FindandRescaleRegions(roi_name);
+                }
+            }
+        }
+    }
+
+    void FindandRescaleRegions(string region_name)
+    {
+        var region_roi = global.Current_rOIs.Single(a => a.Region == region_name);
+        var region_roi_obj = Points_obj.transform.Find(region_name.ToUpper());
+
+        ScaleColorROI(region_roi, region_roi_obj);
+    }
+
+    void FocusRegion(ROI rOI)
+    {
+        var obj = Points_obj.transform.Find(rOI.Region.ToUpper()).gameObject;
+        obj.transform.localScale = new Vector3(9f, 9f, 9f);
+        obj.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
+    }
+
+
 
     #region Apply Threshold ROIs
     IEnumerator SideMenuController_ApplyThr_ROI(double low_thr, double mid_thr, double high_thr)
@@ -169,6 +228,8 @@ public class ROIsController : MonoBehaviour
     {
         MaterialPropertyBlock props = new MaterialPropertyBlock();
         props.SetColor("_Color", color);
+
+        region.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
         region.GetComponent<Renderer>().SetPropertyBlock(props);
     }
 
