@@ -80,6 +80,13 @@ public class PointsController : MonoBehaviour
                 }
             } 
         }
+        else
+        {
+            foreach(var roi in global.Current_rOIs)
+            {
+                RestoreROI(roi);
+            }
+        }
     }
 
    

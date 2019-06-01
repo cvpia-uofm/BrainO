@@ -49,6 +49,7 @@ public class CorrelationController : MonoBehaviour
     {
         if (global.CorrelationActivated)
         {
+            //var conn_obj = gameObject.GetComponentsInChildren<Transform>().Where(a => a.GetComponent<Renderer>().material.shader.name == Shader.Find("Custom/Outline").name).ToList();
             var region = Region_obj.transform.Find(region_name.ToUpper());
             var rbs = region.GetComponents<FixedJoint>();
 
@@ -56,13 +57,16 @@ public class CorrelationController : MonoBehaviour
             {
                 var cb = rb.connectedBody.gameObject;
 
-                foreach(var cor in global.Current_Correlations)
+                if (cb.activeInHierarchy)
                 {
-                    if (cb.name == cor.PointX + "_" + cor.PointY)
-                        ConfigureEdgeWeight(cor, cb, Vector3.zero);
+                    foreach (var cor in global.Current_Correlations)
+                    {
+                        if (cb.name == cor.PointX + "_" + cor.PointY)
+                            ConfigureEdgeWeight(cor, cb, Vector3.zero);
+                    }
                 }
-                
-            } 
+
+            }
         }
     }
 
@@ -79,16 +83,14 @@ public class CorrelationController : MonoBehaviour
             if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
             {
                 List<Regions> region_path = new List<Regions>();
-                foreach (Transform cor in transform)
+                foreach (Transform cor in gameObject.GetComponentsInChildren<Transform>(false))
                 {
                     if (cor.name.Contains(region_name))
                     {
                         cor.GetComponent<Renderer>().material.shader = Shader.Find("Custom/Outline");
 
                         region_path = CollectActiveRegions(global.Current_Correlations.Single(a => a.PointX + "_" + a.PointY == cor.name), region_path).ToList();
-
                     }
-
                 }
                 yield return StartCoroutine(OnPathAction(region_path));
             }
@@ -235,7 +237,6 @@ public class CorrelationController : MonoBehaviour
     }
 
     #region Configure Correlation
-
     IEnumerator PlotCorrelations(IEnumerable<Corelation> corelations, string current_atlas)
     {
         InitPlot(corelations, current_atlas);
@@ -389,7 +390,7 @@ public class CorrelationController : MonoBehaviour
         return scale;
     }
 
-    static void SetEdgeColor(GameObject edge, Color color)
+    void SetEdgeColor(GameObject edge, Color color)
     {
         MaterialPropertyBlock props = new MaterialPropertyBlock();
         props.SetColor("_Color", color);

@@ -38,7 +38,10 @@ public class ROIsController : MonoBehaviour
         RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
         RegionListController.OnFocus_rOI += RegionListController_OnFocus_rOI;
         
+        
     }
+
+  
 
     void RegionListController_OnFocus_rOI(ROI sel_rOI, ROI prev_sel_rOi)
     {
