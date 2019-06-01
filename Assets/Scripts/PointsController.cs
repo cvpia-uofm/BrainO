@@ -41,10 +41,14 @@ public class PointsController : MonoBehaviour
         CorrelationController.ActivateAllPoints += ActivateAllPoints;
         CorrelationController.OnPathAction += CorrelationController_OnPathAction;
         RegionListController.OnFocusPoint += RegionListController_OnFocusPoint;
+        RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
         Init_Atlas();
     }
 
-    
+    void RegionListController_RestorePreviousStateofRegion(string region_name)
+    {
+        UnfocusRegions();
+    }
 
     void RegionListController_OnFocusPoint(Regions region)
     {

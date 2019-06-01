@@ -41,8 +41,6 @@ public class ROIsController : MonoBehaviour
         
     }
 
-  
-
     void RegionListController_OnFocus_rOI(ROI sel_rOI, ROI prev_sel_rOi)
     {
         if(prev_sel_rOi != null)
