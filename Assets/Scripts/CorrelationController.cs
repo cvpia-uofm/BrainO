@@ -48,8 +48,7 @@ public class CorrelationController : MonoBehaviour
     void RegionListController_RestorePreviousStateofRegion(string region_name)
     {
         if (global.CorrelationActivated)
-        {
-            //var conn_obj = gameObject.GetComponentsInChildren<Transform>().Where(a => a.GetComponent<Renderer>().material.shader.name == Shader.Find("Custom/Outline").name).ToList();
+        {            
             var region = Region_obj.transform.Find(region_name.ToUpper());
             var rbs = region.GetComponents<FixedJoint>();
 
@@ -69,7 +68,6 @@ public class CorrelationController : MonoBehaviour
             }
         }
     }
-
     void Start()
     {
             
@@ -123,52 +121,54 @@ public class CorrelationController : MonoBehaviour
     #region Threshold Events
     IEnumerator ApplyThr_bool(double thr_l, double thr_h, bool active)
     {
-        if (!active)
+        var in_active_cor = global.Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
+        foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
         {
-            var in_active_cor = global.Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
-            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
+            foreach (var cor in in_active_cor)
             {
-                foreach (var cor in in_active_cor)
+                if (child.name == cor.PointX + "_" + cor.PointY)
                 {
-                    if (child.name == cor.PointX + "_" + cor.PointY)
-                    {
-                        child.gameObject.SetActive(active);
-                        yield return new WaitForSeconds(0.01f);
-                    }
+                    child.gameObject.SetActive(active);
+                    yield return new WaitForSeconds(0.01f);
                 }
             }
         }
-        else
-        {
-            var in_active_cor = global.Current_Correlations.Where(a => a.Weight >= thr_l && a.Weight <= thr_h);
-            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
-            {
-                foreach (var cor in in_active_cor)
-                {
-                    if (child.name == cor.PointX + "_" + cor.PointY)
-                    {
-                        child.gameObject.SetActive(active);
-                        yield return new WaitForSeconds(0.01f);
-                    }
-                }
-            }
-        }
-
 
     }
     IEnumerator ApplyThr_text(double low_thr, double mid_thr, double high_thr)
     {
-        if (Math.Abs(low_thr - low) > epsilon)
+        if (gameObject.GetComponentsInChildren<Transform>(true).First() != null && gameObject.GetComponentsInChildren<Transform>(true) != null)
         {
-            if (low < low_thr)
+            if (Math.Abs(low_thr - low) > epsilon)
             {
-                StartCoroutine(ApplyThr_bool(low, low_thr - 0.001f, false));
-            }
-            else
-                StartCoroutine(ApplyThr_bool(low_thr, low, true));
+                if (low < low_thr)
+                {
+                    StartCoroutine(ApplyThr_bool(low, low_thr - 0.001f, false));
+                }
+                else
+                    StartCoroutine(ApplyThr_bool(low_thr, low, true));
 
-            low = low_thr;
-            mid_low = (mid + low) / 2;
+                low = low_thr;
+                mid_low = (mid + low) / 2;
+
+            }
+            if (Math.Abs(mid_thr - mid) > epsilon)
+            {
+                mid = mid_thr;
+                mid_low = (mid + low) / 2;
+
+            }
+            if (Math.Abs(high_thr - high) > epsilon)
+            {
+                if (high_thr < high)
+                {
+                    StartCoroutine(ApplyThr_bool(high_thr + 0.001f, high, false));
+                }
+                else
+                    StartCoroutine(ApplyThr_bool(high, high_thr, true));
+                high = high_thr;
+            }
+            var childs = gameObject.GetComponentsInChildren<Transform>(true).ToList();
             foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
             {
                 foreach (var cor in global.Current_Correlations)
@@ -182,52 +182,7 @@ public class CorrelationController : MonoBehaviour
                         yield return new WaitForSeconds(0.01f);
                     }
                 }
-            }
-        }
-        if (Math.Abs(mid_thr - mid) > epsilon)
-        {
-            mid = mid_thr;
-            mid_low = (mid + low) / 2;
-            var cor_thr = global.Current_Correlations.Where(a => a.Weight > mid_low && a.Weight < mid);
-            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
-            {
-                foreach (var cor in global.Current_Correlations)
-                {
-                    if (child.name == cor.PointX + "_" + cor.PointY)
-                    {
-                        var scale = child.transform.localScale;
-                        scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
-
-                        child.transform.localScale = scale;
-                        yield return new WaitForSeconds(0.01f);
-                    }
-                }
-            }
-        }
-        if (Math.Abs(high_thr - high) > epsilon)
-        {
-            if (high_thr < high)
-            {
-                StartCoroutine(ApplyThr_bool(high_thr + 0.001f, high, false));
-            }
-            else
-                StartCoroutine(ApplyThr_bool(high, high_thr, true));
-            high = high_thr;
-            var cor_thr = global.Current_Correlations.Where(a => a.Weight >= mid && a.Weight <= high);
-            foreach (var child in gameObject.GetComponentsInChildren<Transform>(true))
-            {
-                foreach (var cor in global.Current_Correlations)
-                {
-                    if (child.name == cor.PointX + "_" + cor.PointY)
-                    {
-                        var scale = child.transform.localScale;
-                        scale = ConfigureEdgeWeight(cor, child.gameObject, scale);
-
-                        child.transform.localScale = scale;
-                        yield return new WaitForSeconds(0.01f);
-                    }
-                }
-            }
+            } 
         }
     }
     #endregion
