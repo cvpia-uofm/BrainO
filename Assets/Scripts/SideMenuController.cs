@@ -47,6 +47,9 @@ public class SideMenuController : MonoBehaviour
     public static event OnApplyThrValueChange ApplyThr_text;
     public static event OnApplyThrValueChange ApplyThr_ROI;
 
+    public delegate void OnFigureAction(string path);
+    public static event OnFigureAction TakeFiguere;
+
 
 
     public delegate void OnEscapleAction(string atlas_name, IEnumerable<Regions> regions);
@@ -263,6 +266,10 @@ public class SideMenuController : MonoBehaviour
         StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
     }
 
+    public void Print_Figure()
+    {
+        TakeFiguere(null);
+    }
 
 
     public void OnAtlasDropDownValueChange(int index)
