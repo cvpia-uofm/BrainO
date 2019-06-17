@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Models;
 using Assets.Models.Interfaces;
+using ModestTree;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -106,7 +107,7 @@ public class ROIsController : MonoBehaviour
         {
             factor_low = low_thr;
             factor_midlow = (factor_mid + factor_low) / 2;
-
+           
             foreach (var roi in global.Current_rOIs)
             {
                 foreach (Transform point in Points_obj.transform)
@@ -116,6 +117,7 @@ public class ROIsController : MonoBehaviour
                         ScaleColorROI(roi, point);
                         yield return new WaitForSeconds(0.0000001f);
                     }
+                    
                 }
             }
         }
@@ -174,7 +176,7 @@ public class ROIsController : MonoBehaviour
             foreach (var fac_lbls in ROIs_factors)
             {
                 fac_lbls.transform.Rotate(Vector3.up, X);
-                fac_lbls.transform.Rotate(Vector3.right, Y);
+                fac_lbls.transform.Rotate(Vector3.right, -Y);
             } 
         }
     }
@@ -209,17 +211,17 @@ public class ROIsController : MonoBehaviour
     {
         if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
         {
-            atlas_region.localScale = new Vector3(4f, 4f, 4f);
+            atlas_region.localScale = new Vector3(8f, 8f, 8f);
             ConfigureColor_ROI(atlas_region.gameObject, Color.white);
         }
         if (ToDouble(roi.Importance_factor) > factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
         {
-            atlas_region.localScale = new Vector3(6f, 6f, 6f);
+            atlas_region.localScale = new Vector3(9f, 9f, 9f);
             ConfigureColor_ROI(atlas_region.gameObject, Color.blue);
         }
         if (ToDouble(roi.Importance_factor) >= factor_mid && ToDouble(roi.Importance_factor) <= factor_high)
         {
-            atlas_region.localScale = new Vector3(8f, 8f, 8f);
+            atlas_region.localScale = new Vector3(10f, 10f, 10f);
             ConfigureColor_ROI(atlas_region.gameObject, Color.magenta);
         }
     }
@@ -238,6 +240,25 @@ public class ROIsController : MonoBehaviour
         Atlas_regions = Points_obj.GetComponentsInChildren<Transform>(true);
         ROIs_factors = Points_obj.GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
         global.Current_rOIs = reg_of_interests.ToList();
+
+        List<Regions> regs = new List<Regions>();
+        foreach (var roi in global.Current_rOIs)
+        {
+            if (global.Current_Region_list.ToList().Exists(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()))
+            {
+                regs.Add(global.Current_Region_list.Single(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper())); 
+            }
+        }
+        var region_im = global.Current_Region_list.Except(regs);
+        foreach (var region in region_im)
+        {
+            var point_unimp = Points_obj.GetComponentsInChildren<Transform>().SingleOrDefault(a => a.name.ToUpper() == region.Abbreviation.ToUpper());
+
+            if (point_unimp != null)
+            {
+                point_unimp.gameObject.SetActive(false);
+            }
+        }
     }
 
     void CalculateThresholdROI(IEnumerable<ROI> reg_of_interests)

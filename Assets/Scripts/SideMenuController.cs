@@ -28,6 +28,8 @@ public class SideMenuController : MonoBehaviour
     public Toggle Low_thr_toggle;
     public Toggle Mid_thr_toggle;
     public Toggle High_thr_toggle;
+    public Button Load_Correlation_btn;
+    public Button Load_rOI_btn;
     public GameObject Right_Panel_Weight;
     public GameObject Right_Panel_ROI;
 
@@ -133,6 +135,8 @@ public class SideMenuController : MonoBehaviour
             global.AnyRegionSelected = false;
             Right_Panel_Weight.SetActive(false);
             Right_Panel_ROI.SetActive(false);
+            Load_Correlation_btn.interactable = true;
+            Load_rOI_btn.interactable = true;
             RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
             //if (global.CorrelationActivated || global.ROIActivated)
             //{
@@ -204,6 +208,7 @@ public class SideMenuController : MonoBehaviour
 
                 StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
 
+                Load_rOI_btn.interactable = false;
                 Right_Panel_Weight.SetActive(true);
                 Low_thr_toggle.isOn = true;
                 Mid_thr_toggle.isOn = true;
@@ -232,6 +237,7 @@ public class SideMenuController : MonoBehaviour
             {
                 global.ROIActivated = true;
 
+                Load_Correlation_btn.interactable = false;
                 StartCoroutine(OnPlotROI(ROIs, Current_Atlas));
 
                 Right_Panel_ROI.SetActive(true);
