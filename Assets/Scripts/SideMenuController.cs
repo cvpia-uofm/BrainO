@@ -168,15 +168,22 @@ public class SideMenuController : MonoBehaviour
             count++;
         return count;
     }
-
-    string[] FileBrowser()
+    enum FileBrowserOptions {OpenFile, SaveFile};
+    string[] FileBrowser(ExtensionFilter[] extensions, FileBrowserOptions browserOptions)
     {
-        var extensions = new[] {
-            new ExtensionFilter("CSV Files", "csv" ),
-        };
+        if (browserOptions == FileBrowserOptions.OpenFile)
+        {
+            var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
+            return path;
+        }
+        if (browserOptions == FileBrowserOptions.SaveFile)
+        {
+            var path = StandaloneFileBrowser.SaveFilePanel("Save Figure", "", "Brain_O_fig", extensions);
+            var path_to_save = new string[] { path };
+            return path_to_save;
+        }
 
-        var path = StandaloneFileBrowser.OpenFilePanel("Open File", "", extensions, false);
-        return path;
+        return null;
     }
 
 
@@ -186,7 +193,12 @@ public class SideMenuController : MonoBehaviour
 
     public void Load_Correlation()
     {
-        string[] path = FileBrowser();
+
+        var extensions = new[] {
+            new ExtensionFilter("CSV Files", "csv" ),
+        };
+
+        string[] path = FileBrowser(extensions, FileBrowserOptions.OpenFile);
 
         if (path == null)
             return;
@@ -215,7 +227,11 @@ public class SideMenuController : MonoBehaviour
 
     public void Load_ROI()
     {
-        string[] path = FileBrowser();
+        var extensions = new[] {
+            new ExtensionFilter("CSV Files", "csv" ),
+        };
+
+        string[] path = FileBrowser(extensions, FileBrowserOptions.OpenFile);
 
         if (path == null)
             return;
@@ -268,7 +284,15 @@ public class SideMenuController : MonoBehaviour
 
     public void Print_Figure()
     {
-        TakeFiguere(null);
+
+        var extensions = new[] {
+            new ExtensionFilter("JPEG Files", "jpg" ),
+        };
+        var path = FileBrowser(extensions, FileBrowserOptions.SaveFile);
+        if (string.IsNullOrWhiteSpace(path[0]))
+            return;
+
+        TakeFiguere(path[0]);
     }
 
 
