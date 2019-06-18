@@ -290,7 +290,6 @@ public class SideMenuController : MonoBehaviour
 
     public void Print_Figure()
     {
-
         var extensions = new[] {
             new ExtensionFilter("JPEG Files", "jpg" ),
         };

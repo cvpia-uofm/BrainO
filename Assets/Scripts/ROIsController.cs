@@ -211,7 +211,7 @@ public class ROIsController : MonoBehaviour
     {
         if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
         {
-            atlas_region.localScale = new Vector3(8f, 8f, 8f);
+            atlas_region.localScale = new Vector3(7f, 7f, 7f);
             ConfigureColor_ROI(atlas_region.gameObject, Color.white);
         }
         if (ToDouble(roi.Importance_factor) > factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
