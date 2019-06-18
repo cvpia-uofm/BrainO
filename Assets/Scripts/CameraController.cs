@@ -29,6 +29,11 @@ public class CameraController : MonoBehaviour
 
     void OnPostRender()
     {
+        SnapScreenshot();
+    }
+
+    void SnapScreenshot()
+    {
         if (ReadyToTakeScreenShot)
         {
             ReadyToTakeScreenShot = false;
@@ -47,6 +52,4 @@ public class CameraController : MonoBehaviour
             
         }
     }
-
-
 }
