@@ -97,6 +97,7 @@ public class SideMenuController : MonoBehaviour
         Corelations = new List<Corelation>();
 
         AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
+
         global.Atlas_Regions_dict_index = new Dictionary<int, IEnumerable<Regions>>()
         {
             { 0, atlas.Desikan_Atlas },
@@ -105,9 +106,10 @@ public class SideMenuController : MonoBehaviour
             { 3, atlas.Aal116_Atlas },
             { 4, atlas.Aal90_Atlas }
         };
+
         global.Atlas_Regions_value_pairs = new Dictionary<string, IEnumerable<Regions>>()
         {
-            { Atlas.DSK_Atlas,  atlas.Desikan_Atlas},
+            { Atlas.DSK_Atlas,  atlas.Desikan_Atlas },
             { Atlas.DTX_Atlas, atlas.Destrieux_Atlas },
             { Atlas.CDK_Atlas, atlas.Craddock_Atlas },
             { Atlas.A116_Atlas, atlas.Aal116_Atlas },
@@ -197,9 +199,8 @@ public class SideMenuController : MonoBehaviour
 
     public void Load_Correlation()
     {
-
         var extensions = new[] {
-            new ExtensionFilter("CSV Files", "csv" ),
+            new ExtensionFilter("CSV Files", "csv"),
         };
 
         string[] path = FileBrowser(extensions, FileBrowserOptions.OpenFile);
