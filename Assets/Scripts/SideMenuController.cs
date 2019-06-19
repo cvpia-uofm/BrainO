@@ -32,6 +32,8 @@ public class SideMenuController : MonoBehaviour
     public Button Load_rOI_btn;
     public GameObject Right_Panel_Weight;
     public GameObject Right_Panel_ROI;
+    public Camera Main;
+    public Camera Auxilary;
 
     public delegate IEnumerator OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
@@ -299,6 +301,7 @@ public class SideMenuController : MonoBehaviour
             return;
 
         TakeFiguere(path[0]);
+
     }
 
 

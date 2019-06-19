@@ -27,6 +27,9 @@ public class ROIsController : MonoBehaviour
     public delegate void OnUpdateROIthr(double low, double mid, double high);
     public static event OnUpdateROIthr UpdateROIthr;
 
+    public delegate void OnFinishPlotROI();
+    public static event OnFinishPlotROI Populate_ROI_ListView;
+
    
 
     void Awake()
@@ -197,12 +200,13 @@ public class ROIsController : MonoBehaviour
             {
                 var factor = atlas_region.GetComponentsInChildren<TMP_Text>(true).SingleOrDefault(a => a.name == "ROI_factor");
                 factor.gameObject.SetActive(true);
-                factor.text = roi.Importance_factor + "%";
+                factor.text = roi.Importance_factor;
                 ScaleColorROI(roi, atlas_region);
                 yield return new WaitForSeconds(0.00001f);
 
             }
         }
+        Populate_ROI_ListView();
 
         
     }
@@ -240,13 +244,21 @@ public class ROIsController : MonoBehaviour
         Atlas_regions = Points_obj.GetComponentsInChildren<Transform>(true);
         ROIs_factors = Points_obj.GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
         global.Current_rOIs = reg_of_interests.ToList();
+        foreach(Transform region in Points_obj.transform)
+        {
+            region.gameObject.SetActive(true);
+        }
+        FocusImportantRegions();
+    }
 
+    void FocusImportantRegions()
+    {
         List<Regions> regs = new List<Regions>();
         foreach (var roi in global.Current_rOIs)
         {
             if (global.Current_Region_list.ToList().Exists(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()))
             {
-                regs.Add(global.Current_Region_list.Single(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper())); 
+                regs.Add(global.Current_Region_list.Single(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()));
             }
         }
         var region_im = global.Current_Region_list.Except(regs);
