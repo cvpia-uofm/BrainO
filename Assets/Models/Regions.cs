@@ -1,4 +1,6 @@
-﻿namespace Assets.Models
+﻿using UnityEngine;
+
+namespace Assets.Models
 {
     public class Regions
     {
@@ -9,5 +11,7 @@
         public double Z { get; set; }
         public string Hemisphere { get; set; }
         public string Note { get; set; }
+
+        
     }
 }

@@ -73,6 +73,7 @@ public class PointsController : MonoBehaviour
         {
             foreach (var region in global.Current_Region_list)
             {
+
                 foreach (Transform child in transform)
                 {
                     if (child.name == region.Abbreviation.ToUpper())
@@ -260,21 +261,21 @@ public class PointsController : MonoBehaviour
         ScalePoints(Func_Area, atlas_regions.Count());
     }
 
-    void ScalePoints(GameObject func_Area, int atlas_length)
+    void ScalePoints(GameObject Func_Area, int atlas_length)
     {
         if (atlas_length == 68)
         {
-            func_Area.transform.localScale = new Vector3(5f, 5f, 5f);
+            Func_Area.transform.localScale = new Vector3(5f, 5f, 5f);
             return;
         }
         if (atlas_length < 100)
         {
-            func_Area.transform.localScale = new Vector3(4f, 4f, 4f);
+            Func_Area.transform.localScale = new Vector3(4f, 4f, 4f);
             return;
         }
         if (atlas_length > 100)
         {
-            func_Area.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
+            Func_Area.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
             return;
         }
     }
