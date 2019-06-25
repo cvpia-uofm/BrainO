@@ -9,7 +9,7 @@ namespace Assets.Models.Correlation_Generator
 {
     public static class CorrelationGenerator
     {
-        public static IEnumerable<Corelation> GenerateRandomCorrelation(IEnumerable<Regions> atlas)
+        public static IEnumerable<Corelation> GenerateRandomCorrelation(IEnumerable<Region> atlas)
         {
             string[] corr_matrix = new string[atlas.Count() + 2];
             StringBuilder regions = new StringBuilder(" ");
@@ -36,7 +36,7 @@ namespace Assets.Models.Correlation_Generator
             return MapperFactory<Corelation>.Map_CSV(corr_matrix, MapperEnums.Inputs.Correlations);
         }
 
-        private static void GenerateColumns(IEnumerable<Regions> atlas, string[] corr_matrix, StringBuilder regions)
+        private static void GenerateColumns(IEnumerable<Region> atlas, string[] corr_matrix, StringBuilder regions)
         {
             foreach (var region in atlas)
             {

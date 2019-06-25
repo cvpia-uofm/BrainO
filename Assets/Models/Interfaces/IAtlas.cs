@@ -8,11 +8,11 @@ namespace Assets.Models.Interfaces
 {
     public interface IAtlas
     {
-        IEnumerable<Regions> Desikan_Atlas { get; set; }
-        IEnumerable<Regions> Destrieux_Atlas { get; set; }
-        IEnumerable<Regions> Craddock_Atlas { get; set; }
-        IEnumerable<Regions> Aal116_Atlas { get; set; }
-        IEnumerable<Regions> Aal90_Atlas { get; set; }
+        IEnumerable<Region> Desikan_Atlas { get; set; }
+        IEnumerable<Region> Destrieux_Atlas { get; set; }
+        IEnumerable<Region> Craddock_Atlas { get; set; }
+        IEnumerable<Region> Aal116_Atlas { get; set; }
+        IEnumerable<Region> Aal90_Atlas { get; set; }
 
        
     }

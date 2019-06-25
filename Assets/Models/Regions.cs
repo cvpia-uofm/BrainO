@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Assets.Models.Interfaces;
+using UnityEngine;
 
 namespace Assets.Models
 {
-    public class Regions
+    public class Region : Transform, IRegion
     {
         public string Abbreviation { get; set; }
         public string Region_Name { get; set; }

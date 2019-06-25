@@ -5,17 +5,53 @@ using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
+    public Camera MainCamera;
     public Camera Camera_fig;
     public Text Status_lbl;
 
+    public delegate void RotationAction(float X, float Y);
+
+    public static event RotationAction OnBrainRotate;
+
     bool ReadyToTakeScreenShot;
     string path_to_save;
+    float speed = 200;
 
     void Awake()
     {
         SideMenuController.TakeFiguere += SideMenuController_TakeFiguere;
     }
 
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            Rotate_Camera(0, speed * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            Rotate_Camera(0, -speed * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            Rotate_Camera(speed * Time.deltaTime, 0);
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            Rotate_Camera(-speed * Time.deltaTime, 0);
+        }
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            transform.rotation = new Quaternion(0, 0, 0, 0);
+        }
+        
+        
+    }
+    void Rotate_Camera(float X_rot, float Y_rot)
+    {
+        transform.Rotate(X_rot, Y_rot, 0);
+        OnBrainRotate(X_rot, Y_rot);
+    }
     void SideMenuController_TakeFiguere(string path)
     {
         

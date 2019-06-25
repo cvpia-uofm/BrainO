@@ -28,10 +28,10 @@ public class CorrelationController : MonoBehaviour
     public delegate void OnWeightThrUpdateAction(double low, double mid, double high);
     public static event OnWeightThrUpdateAction UpdateWeightThr;
 
-    public delegate IEnumerator OnRegionPathAction(IEnumerable<Regions> regions);
+    public delegate IEnumerator OnRegionPathAction(IEnumerable<Region> regions);
     public static event OnRegionPathAction OnPathAction;
 
-    public delegate void OnUpdateRegionList(IEnumerable<Regions> atlas_regions);
+    public delegate void OnUpdateRegionList(IEnumerable<Region> atlas_regions);
     public static event OnUpdateRegionList Update_Regionlist;
 
     void Awake()
@@ -80,7 +80,7 @@ public class CorrelationController : MonoBehaviour
             SetEdgeWeightstoDefault();
             if (!string.IsNullOrWhiteSpace(region_name) && global.CorrelationActivated)
             {
-                List<Regions> region_path = new List<Regions>();
+                List<Region> region_path = new List<Region>();
                 foreach (Transform cor in gameObject.GetComponentsInChildren<Transform>(false))
                 {
                     if (cor.name.Contains(region_name))
@@ -113,7 +113,7 @@ public class CorrelationController : MonoBehaviour
         }
     }
 
-    void ResetCorrelations(string atlas_name, IEnumerable<Regions> regions)
+    void ResetCorrelations(string atlas_name, IEnumerable<Region> regions)
     {
         RemoveExistingCorrelation();
     }
@@ -216,7 +216,7 @@ public class CorrelationController : MonoBehaviour
 
     }
 
-    IList<Regions> CollectActiveRegions(Corelation relation, IList<Regions> regions_storage)
+    IList<Region> CollectActiveRegions(Corelation relation, IList<Region> regions_storage)
     {
         var pointX = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointX);
         var pointY = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointY);
@@ -284,7 +284,7 @@ public class CorrelationController : MonoBehaviour
         global.Current_Correlations = corelations;
 
         activePoints = new List<GameObject>();
-        global.Current_Active_Regions = new List<Regions>();
+        global.Current_Active_Regions = new List<Region>();
     }
 
     void Load_Init_Prefab_Edge(Corelation relation, out GameObject pointX, out GameObject pointY, out Vector3 region_start, out Vector3 region_end, out GameObject edge)

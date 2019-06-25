@@ -9,11 +9,11 @@ namespace Assets.Models.Interfaces
         bool AnyRegionSelected { get; set; }
 
         string Current_atlas { get; set; }
-        IDictionary<int, IEnumerable<Regions>> Atlas_Regions_dict_index { get; set; }
-        IDictionary<string, IEnumerable<Regions>> Atlas_Regions_value_pairs { get; set; }
+        IDictionary<int, IEnumerable<Region>> Atlas_Regions_dict_index { get; set; }
+        IDictionary<string, IEnumerable<Region>> Atlas_Regions_value_pairs { get; set; }
 
-        IEnumerable<Regions> Current_Region_list { get; set; }
-        IList<Regions> Current_Active_Regions { get; set; }
+        IEnumerable<Region> Current_Region_list { get; set; }
+        IList<Region> Current_Active_Regions { get; set; }
 
         IEnumerable<Corelation> Current_Correlations { get; set; }
 

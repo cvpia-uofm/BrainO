@@ -56,7 +56,7 @@ public class SideMenuController : MonoBehaviour
 
 
 
-    public delegate void OnEscapleAction(string atlas_name, IEnumerable<Regions> regions);
+    public delegate void OnEscapleAction(string atlas_name, IEnumerable<Region> regions);
     public static event OnEscapleAction RestorePoints;
 
     [Inject]
@@ -100,7 +100,7 @@ public class SideMenuController : MonoBehaviour
 
         AtlasDropDown.AddOptions(new List<string>() { Atlas.DSK_Atlas, Atlas.DTX_Atlas, Atlas.CDK_Atlas, Atlas.A116_Atlas, Atlas.A90_Atlas });
 
-        global.Atlas_Regions_dict_index = new Dictionary<int, IEnumerable<Regions>>()
+        global.Atlas_Regions_dict_index = new Dictionary<int, IEnumerable<Region>>()
         {
             { 0, atlas.Desikan_Atlas },
             { 1, atlas.Destrieux_Atlas },
@@ -109,7 +109,7 @@ public class SideMenuController : MonoBehaviour
             { 4, atlas.Aal90_Atlas }
         };
 
-        global.Atlas_Regions_value_pairs = new Dictionary<string, IEnumerable<Regions>>()
+        global.Atlas_Regions_value_pairs = new Dictionary<string, IEnumerable<Region>>()
         {
             { Atlas.DSK_Atlas,  atlas.Desikan_Atlas },
             { Atlas.DTX_Atlas, atlas.Destrieux_Atlas },

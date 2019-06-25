@@ -37,8 +37,8 @@ public class ROIsController : MonoBehaviour
         SideMenuController.OnPlotROI += PlotROIs;
         SideMenuController.RestorePoints += RemoveROI_lbls;
         SideMenuController.ApplyThr_ROI += SideMenuController_ApplyThr_ROI;
-        BrainController.OnBrainRotate += RotateFactors;
-        PointsController.RestoreROI += PointsController_RestoreROI;
+        CameraController.OnBrainRotate += RotateFactors;
+        RegionsController.RestoreROI += PointsController_RestoreROI;
         RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
         RegionListController.OnFocus_rOI += RegionListController_OnFocus_rOI;
         
@@ -161,7 +161,7 @@ public class ROIsController : MonoBehaviour
     } 
     #endregion
 
-    void RemoveROI_lbls(string atlas_name, IEnumerable<Regions> regions)
+    void RemoveROI_lbls(string atlas_name, IEnumerable<Region> regions)
     {
         if (ROIs_factors != null && global.ROIActivated)
         {
@@ -178,8 +178,8 @@ public class ROIsController : MonoBehaviour
         {
             foreach (var fac_lbls in ROIs_factors)
             {
-                fac_lbls.transform.Rotate(Vector3.up, X);
-                fac_lbls.transform.Rotate(Vector3.right, -Y);
+                fac_lbls.transform.Rotate(-X, Y, 0);
+
             } 
         }
     }
@@ -253,7 +253,7 @@ public class ROIsController : MonoBehaviour
 
     void FocusImportantRegions()
     {
-        List<Regions> regs = new List<Regions>();
+        List<Region> regs = new List<Region>();
         foreach (var roi in global.Current_rOIs)
         {
             if (global.Current_Region_list.ToList().Exists(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()))
@@ -261,7 +261,7 @@ public class ROIsController : MonoBehaviour
                 regs.Add(global.Current_Region_list.Single(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()));
             }
         }
-        var region_im = global.Current_Region_list.Except(regs);
+        var region_im = global.Current_Region_list.ToList().Except(regs);
         foreach (var region in region_im)
         {
             var point_unimp = Points_obj.GetComponentsInChildren<Transform>().SingleOrDefault(a => a.name.ToUpper() == region.Abbreviation.ToUpper());

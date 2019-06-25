@@ -4,7 +4,7 @@ using Zenject;
 
 public class BrainController : MonoBehaviour
 {
-    private const float rotateSpeed = 200;
+    const float rotateSpeed = 200;
 
     public delegate void RotationAction(float X, float Y);
 
@@ -13,18 +13,17 @@ public class BrainController : MonoBehaviour
     [Inject]
     readonly IGlobal global;
 
-    private void Start()
+    void Start()
     {
     }
 
-    private void Update()
+    void Update()
     {
-
         Rotation();
         Scaling(); 
     }
 
-    private void Scaling()
+    void Scaling()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0f && Input.GetKey(KeyCode.LeftControl))
         {
@@ -43,7 +42,7 @@ public class BrainController : MonoBehaviour
         }
     }
 
-    private void Rotation()
+    void Rotation()
     {
         if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
         {
@@ -55,5 +54,9 @@ public class BrainController : MonoBehaviour
 
             OnBrainRotate(rotateX, rotateY);
         }
+
+        
+
+        
     }
 }

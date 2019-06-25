@@ -20,7 +20,7 @@ public class RegionListController : MonoBehaviour
     public delegate IEnumerator OnPathofRegionAction(string region_name);
     public static event OnPathofRegionAction OnRegionSelected;
 
-    public delegate void OnFocusRegion(Regions region);
+    public delegate void OnFocusRegion(Region region);
     public static event OnFocusRegion OnFocusPoint;
 
     public delegate void OnFocusROI(ROI sel_rOI, ROI prev_sel_rOi);
@@ -45,13 +45,13 @@ public class RegionListController : MonoBehaviour
     }
 
 
-    void SideMenuController_RestorePoints(string atlas_name, IEnumerable<Regions> regions)
+    void SideMenuController_RestorePoints(string atlas_name, IEnumerable<Region> regions)
     {
         SearchField.text = "";
         Populate_Region_list(regions);
     }
 
-    void CorrelationController_Update_Regionlist(IEnumerable<Regions> atlas_regions)
+    void CorrelationController_Update_Regionlist(IEnumerable<Region> atlas_regions)
     {
         if (atlas_regions.Count() != 0)
         {
@@ -100,7 +100,7 @@ public class RegionListController : MonoBehaviour
         Populate_Region_list(global.Atlas_Regions_value_pairs[atlas_name]);
     }
 
-    void Populate_Region_list(IEnumerable<Regions> atlas_regions)
+    void Populate_Region_list(IEnumerable<Region> atlas_regions)
     {
         foreach (Transform ext_region in Content.transform)
         {
@@ -114,7 +114,7 @@ public class RegionListController : MonoBehaviour
         ScrollBar.value = 1;
     }
 
-    void Construct_Region_for_view(Regions region)
+    void Construct_Region_for_view(Region region)
     {
 
         var item = Instantiate(ItemPrefab.gameObject) as GameObject;
@@ -152,7 +152,7 @@ public class RegionListController : MonoBehaviour
 
     public void OnSearch(string txt)
     {
-        List<Regions> result = null;
+        List<Region> result = null;
         if (!global.CorrelationActivated)
         {
             result = global.Current_Region_list.Where(a => a.Abbreviation.ToUpper().Contains(txt.ToUpper())).ToList();
