@@ -32,6 +32,8 @@ public class SideMenuController : MonoBehaviour
     public Button Load_rOI_btn;
     public GameObject Right_Panel_Weight;
     public GameObject Right_Panel_ROI;
+    public GameObject Cerebellum;
+    public GameObject Brainstem;
     public Camera Main;
     public Camera Auxilary;
 
@@ -52,7 +54,7 @@ public class SideMenuController : MonoBehaviour
     public static event OnApplyThrValueChange ApplyThr_ROI;
 
     public delegate void OnFigureAction(string path);
-    public static event OnFigureAction TakeFiguere;
+    public static event OnFigureAction TakeFigure;
 
 
 
@@ -85,6 +87,18 @@ public class SideMenuController : MonoBehaviour
         {
             anim.SetBool("IsDisplayed", true);
             Collapse_btn.GetComponentInChildren<Text>().text = "<";
+        }
+    }
+    public void BoolAnimatorTopMenu(Animator anim)
+    {
+        if (anim.GetBool("IsDisplayedTopMenu"))
+        {
+            anim.SetBool("IsDisplayedTopMenu", false);
+        }
+
+        else
+        {
+            anim.SetBool("IsDisplayedTopMenu", true);
         }
     }
 
@@ -199,6 +213,10 @@ public class SideMenuController : MonoBehaviour
 
     public void Right_Hemph_Activation(bool active) => Right_Hemph.SetActive(active);
 
+    public void Cerebellum_Activation(bool active) => Cerebellum.SetActive(active);
+
+    public void Brainstem_Activation(bool active) => Brainstem.SetActive(active);
+
     public void Load_Correlation()
     {
         var extensions = new[] {
@@ -300,7 +318,7 @@ public class SideMenuController : MonoBehaviour
         if (string.IsNullOrWhiteSpace(path[0]))
             return;
 
-        TakeFiguere(path[0]);
+        TakeFigure(path[0]);
 
     }
 

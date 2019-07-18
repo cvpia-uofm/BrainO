@@ -19,8 +19,8 @@ public class BrainController : MonoBehaviour
 
     void Update()
     {
-        Rotation();
-        Scaling(); 
+        //Rotation();
+        //Scaling(); 
     }
 
     void Scaling()

@@ -7,8 +7,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using Zenject;
-using System.Diagnostics.Contracts;
-using UnityEngine.EventSystems;
 
 public class CorrelationController : MonoBehaviour
 {
@@ -64,13 +62,12 @@ public class CorrelationController : MonoBehaviour
                             ConfigureEdgeWeight(cor, cb, Vector3.zero);
                     }
                 }
-
             }
         }
     }
     void Start()
     {
-            
+        
     }
 
     IEnumerator RegionListController_OnRegionSelected(string region_name)
@@ -93,8 +90,6 @@ public class CorrelationController : MonoBehaviour
                 yield return StartCoroutine(OnPathAction(region_path));
             }
         }
-
-
     }
 
     void SetEdgeWeightstoDefault()
@@ -135,6 +130,7 @@ public class CorrelationController : MonoBehaviour
         }
 
     }
+
     IEnumerator ApplyThr_text(double low_thr, double mid_thr, double high_thr)
     {
         if (gameObject.GetComponentsInChildren<Transform>(true).First() != null && gameObject.GetComponentsInChildren<Transform>(true) != null)
@@ -227,7 +223,6 @@ public class CorrelationController : MonoBehaviour
             regions_storage.Add(pointY);
 
         return regions_storage;
-
     }
 
     #region Threshold

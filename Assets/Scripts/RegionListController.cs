@@ -41,7 +41,6 @@ public class RegionListController : MonoBehaviour
         SideMenuController.OnChangeAtlas += SideMenuController_OnChangeAtlas;
         SideMenuController.RestorePoints += SideMenuController_RestorePoints;
         CorrelationController.Update_Regionlist += CorrelationController_Update_Regionlist;
-
     }
 
 
@@ -85,9 +84,7 @@ public class RegionListController : MonoBehaviour
                     }
                 }
             }
-
         }
-
     }
 
     void Start()
@@ -116,7 +113,6 @@ public class RegionListController : MonoBehaviour
 
     void Construct_Region_for_view(Region region)
     {
-
         var item = Instantiate(ItemPrefab.gameObject) as GameObject;
         var region_name_item = item.GetComponentsInChildren<Text>().SingleOrDefault(a => a.name == "Region_name");
 

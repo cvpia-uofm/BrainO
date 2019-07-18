@@ -19,7 +19,7 @@ public class CameraController : MonoBehaviour
 
     void Awake()
     {
-        SideMenuController.TakeFiguere += SideMenuController_TakeFiguere;
+        SideMenuController.TakeFigure += SideMenuController_TakeFigure;
     }
 
     void Update()
@@ -44,22 +44,20 @@ public class CameraController : MonoBehaviour
         {
             transform.rotation = new Quaternion(0, 0, 0, 0);
         }
-        
-        
     }
+
     void Rotate_Camera(float X_rot, float Y_rot)
     {
         transform.Rotate(X_rot, Y_rot, 0);
         OnBrainRotate(X_rot, Y_rot);
     }
-    void SideMenuController_TakeFiguere(string path)
-    {
-        
-        Camera_fig.targetTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
-        path_to_save = path;
-        ReadyToTakeScreenShot = true;
-        Status_lbl.gameObject.SetActive(true);
 
+    void SideMenuController_TakeFigure(string path)
+    {
+        //Camera_fig.targetTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+        //path_to_save = path;
+        //ReadyToTakeScreenShot = true;
+        //Status_lbl.gameObject.SetActive(true);
 
     }
 
