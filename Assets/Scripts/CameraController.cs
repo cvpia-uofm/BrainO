@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using Assets.Models.Interfaces;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class CameraController : MonoBehaviour
 {
@@ -17,9 +19,17 @@ public class CameraController : MonoBehaviour
     string path_to_save;
     float speed = 200;
 
+    [Inject]
+    readonly IGlobal global;
+
     void Awake()
     {
         SideMenuController.TakeFigure += SideMenuController_TakeFigure;
+    }
+
+    void Start()
+    {
+        global.Back_col = MainCamera.backgroundColor;
     }
 
     void Update()

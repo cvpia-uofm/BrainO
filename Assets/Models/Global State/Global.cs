@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets.Models.Global_State
 {
@@ -26,5 +27,11 @@ namespace Assets.Models.Global_State
         public IList<ROI> Current_rOIs { get; set; }
 
         public bool MouseOverUI { get; set; }
+
+        public Color Back_col { get; set; }
+        public Color RH_reg_col { get; set; }
+        public Color LH_reg_col { get; set; }
+        public Color Lbl_col { get; set; }
+        public Color Mesh_col { get; set; }
     }
 }

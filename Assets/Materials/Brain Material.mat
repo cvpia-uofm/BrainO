@@ -76,7 +76,7 @@ Material:
     - _DstBlend: 10
     - _EmissionEnabled: 0
     - _FlipbookMode: 0
-    - _GlossMapScale: 1
+    - _GlossMapScale: 0.14
     - _Glossiness: 0.72
     - _GlossyReflections: 1
     - _LightingEnabled: 1

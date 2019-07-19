@@ -5,5 +5,8 @@ using UnityEngine.Events;
 [Serializable]
 public class ColorChangedEvent : UnityEvent<Color>
 {
-
+    internal void AddListener()
+    {
+        throw new NotImplementedException();
+    }
 }

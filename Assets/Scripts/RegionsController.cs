@@ -198,7 +198,7 @@ public class RegionsController : MonoBehaviour
         Translate_Points();
     }
 
-    private void InitPlot(IEnumerable<Region> atlas_regions, string atlas_name)
+    void InitPlot(IEnumerable<Region> atlas_regions, string atlas_name)
     {
         global.Current_Region_list = new List<Region>(atlas_regions);
         global.Current_atlas = atlas_name;
@@ -228,12 +228,14 @@ public class RegionsController : MonoBehaviour
         Func_Area.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
         if (region.Hemisphere.Equals("left") || region.Abbreviation.StartsWith("l", StringComparison.CurrentCulture))
         {
-            props.SetColor("_Color", Color.red);
+            global.LH_reg_col = Color.red;
+            props.SetColor("_Color", global.LH_reg_col);
             Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
         }
         if (region.Hemisphere.Equals("right") || region.Abbreviation.StartsWith("r", StringComparison.CurrentCulture))
         {
-            props.SetColor("_Color", Color.blue);
+            global.RH_reg_col = Color.blue;
+            props.SetColor("_Color", global.RH_reg_col);
             Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
         }
     }
@@ -244,6 +246,8 @@ public class RegionsController : MonoBehaviour
         var textobj = canvas.GetComponentsInChildren<TMP_Text>().Single(a => a.name == "Abbreviation");
         textobj.text = region.Abbreviation;
         pointLabels.Add(textobj);
+
+        global.Lbl_col = textobj.color;
     }
 
     void Set_Tranform_of_Point(IEnumerable<Region> atlas_regions, Matrix<float> inputVector, GameObject Func_Area)

@@ -10,11 +10,17 @@ public class BrainController : MonoBehaviour
 
     public static event RotationAction OnBrainRotate;
 
+    public GameObject Cerebellum;
+    public GameObject Brainstem;
+    public GameObject Left_Hemp;
+    public GameObject Right_Hemp;
+
     [Inject]
     readonly IGlobal global;
 
     void Start()
     {
+        global.Mesh_col = Left_Hemp.GetComponent<Renderer>().material.color;
     }
 
     void Update()

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Models.Interfaces
 {
@@ -20,6 +21,12 @@ namespace Assets.Models.Interfaces
         IList<ROI> Current_rOIs { get; set; }
 
         bool MouseOverUI { get; set; }
+
+        Color Back_col { get; set; }
+        Color RH_reg_col { get; set; }
+        Color LH_reg_col { get; set; }
+        Color Lbl_col { get; set; }
+        Color Mesh_col { get; set; }
 
 
     }

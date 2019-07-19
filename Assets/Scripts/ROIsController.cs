@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.Models;
+using Assets.Models.Compaerer;
 using Assets.Models.Interfaces;
 using ModestTree;
 using TMPro;
@@ -259,7 +260,7 @@ public class ROIsController : MonoBehaviour
                 regs.Add(global.Current_Region_list.Single(a => a.Abbreviation.ToUpper() == roi.Region.ToUpper()));
             }
         }
-        var region_im = global.Current_Region_list.ToList().Except(regs);
+        var region_im = global.Current_Region_list.ToList().Except(regs, new Reg_rOI_Comparer()).ToList();
         foreach (var region in region_im)
         {
             var point_unimp = Points_obj.GetComponentsInChildren<Transform>().SingleOrDefault(a => a.name.ToUpper() == region.Abbreviation.ToUpper());
