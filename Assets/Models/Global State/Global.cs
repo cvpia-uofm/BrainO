@@ -13,6 +13,7 @@ namespace Assets.Models.Global_State
         public bool CorrelationActivated { get; set; }
         public bool ROIActivated { get; set; }
         public bool AnyRegionSelected { get; set; }
+        public bool Settings_Activated { get; set; }
 
         public string Current_atlas { get; set; }
 
@@ -33,5 +34,6 @@ namespace Assets.Models.Global_State
         public Color LH_reg_col { get; set; }
         public Color Lbl_col { get; set; }
         public Color Mesh_col { get; set; }
+        
     }
 }

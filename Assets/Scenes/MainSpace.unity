@@ -5564,6 +5564,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Selection_lbl: {fileID: 207774448}
   ColorPicker: {fileID: 4299382811736799109}
+  MainCamera: {fileID: 534669904}
+  Points: {fileID: 275348629}
+  Cerebellum: {fileID: 612817799}
+  Brainstem: {fileID: 612817795}
+  Left_Hemp: {fileID: 612817793}
+  Right_Hemp: {fileID: 612817805}
 --- !u!1 &660892076
 GameObject:
   m_ObjectHideFlags: 0
@@ -6902,6 +6908,7 @@ MonoBehaviour:
   Brainstem: {fileID: 612817795}
   Main: {fileID: 534669904}
   Auxilary: {fileID: 117981184}
+  Settings_Color_Picker: {fileID: 4299382811736799109}
 --- !u!1 &968232360
 GameObject:
   m_ObjectHideFlags: 0

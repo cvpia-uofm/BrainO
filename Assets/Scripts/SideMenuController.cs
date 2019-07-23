@@ -36,6 +36,7 @@ public class SideMenuController : MonoBehaviour
     public GameObject Brainstem;
     public Camera Main;
     public Camera Auxilary;
+    public ColorPicker Settings_Color_Picker;
 
     public delegate IEnumerator OnPlotAction(IEnumerable<Corelation> corelations, string current_atlas);
     public static event OnPlotAction OnPlotCorrelation;
@@ -94,11 +95,13 @@ public class SideMenuController : MonoBehaviour
         if (anim.GetBool("IsDisplayedTopMenu"))
         {
             anim.SetBool("IsDisplayedTopMenu", false);
+            global.Settings_Activated = false;
         }
 
         else
         {
             anim.SetBool("IsDisplayedTopMenu", true);
+            global.Settings_Activated = true;
         }
     }
 
