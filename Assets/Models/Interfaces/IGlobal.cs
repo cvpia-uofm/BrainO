@@ -28,6 +28,9 @@ namespace Assets.Models.Interfaces
         Color LH_reg_col { get; set; }
         Color Lbl_col { get; set; }
         Color Mesh_col { get; set; }
+        Color High_rOI_col { get; set; }
+        Color Mid_rOI_col { get; set; }
+        Color Low_rOI_col { get; set; }
 
 
     }

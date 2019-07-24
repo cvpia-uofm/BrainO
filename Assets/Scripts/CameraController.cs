@@ -1,15 +1,22 @@
 ﻿using Assets.Models.Interfaces;
+using SFB;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using static SideMenuController;
 
 public class CameraController : MonoBehaviour
 {
     public Camera MainCamera;
-    public Camera Camera_fig;
     public Text Status_lbl;
+    public Canvas TitleCanvas;
+    public Canvas ListViewCanvas;
+    public Canvas SideMenuCanvas;
+    public RectTransform ROI_ListView_Panel;
+    public RectTransform CameraCtrlPanel;
+    public RectTransform FigureCtrlPanel;
 
     public delegate void RotationAction(float X, float Y);
 
@@ -68,32 +75,54 @@ public class CameraController : MonoBehaviour
         //path_to_save = path;
         //ReadyToTakeScreenShot = true;
         //Status_lbl.gameObject.SetActive(true);
+        TitleCanvas.gameObject.SetActive(false);
+        ListViewCanvas.gameObject.SetActive(false);
+        CameraCtrlPanel.gameObject.SetActive(false);
+        SideMenuCanvas.gameObject.SetActive(false);
+        FigureCtrlPanel.gameObject.SetActive(true);
 
+        if (global.ROIActivated)
+        {
+            ROI_ListView_Panel.gameObject.SetActive(true); 
+        }
     }
 
     void OnPostRender()
     {
-        SnapScreenshot();
+        //SnapScreenshot();
     }
 
-    void SnapScreenshot()
+    public void SnapScreenshot()
     {
-        if (ReadyToTakeScreenShot)
-        {
-            ReadyToTakeScreenShot = false;
+        //if (ReadyToTakeScreenShot)
+        //{
+        //    ReadyToTakeScreenShot = false;
 
-            RenderTexture renderTexture = Camera_fig.targetTexture;
-            Texture2D renderResult = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
-            Rect rect = new Rect(0, 0, renderTexture.width, renderTexture.height);
-            renderResult.ReadPixels(rect, 0, 0);
+        //    RenderTexture renderTexture = Camera_fig.targetTexture;
+        //    Texture2D renderResult = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
+        //    Rect rect = new Rect(0, 0, renderTexture.width, renderTexture.height);
+        //    renderResult.ReadPixels(rect, 0, 0);
 
-            byte[] vs = renderResult.EncodeToJPG();
+        //    byte[] vs = renderResult.EncodeToJPG();
 
-            System.IO.File.WriteAllBytes(path_to_save, vs);
+        //    System.IO.File.WriteAllBytes(path_to_save, vs);
 
-            RenderTexture.ReleaseTemporary(renderTexture);
-            Camera_fig.targetTexture = null;
-            
-        }
+        //    RenderTexture.ReleaseTemporary(renderTexture);
+        //    Camera_fig.targetTexture = null;
+
+        //}
+        var extensions = new[] {
+            new ExtensionFilter("JPEG Files", "jpg" ),
+        };
+        var path = FileBrowser(extensions, FileBrowserOptions.SaveFile);
+        if (string.IsNullOrWhiteSpace(path[0]))
+            return;
+
+
+    }
+
+    public void Cancel()
+    {
+
     }
 }

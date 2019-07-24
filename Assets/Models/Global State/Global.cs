@@ -34,6 +34,8 @@ namespace Assets.Models.Global_State
         public Color LH_reg_col { get; set; }
         public Color Lbl_col { get; set; }
         public Color Mesh_col { get; set; }
-        
+        public Color High_rOI_col { get; set; }
+        public Color Mid_rOI_col { get; set; }
+        public Color Low_rOI_col { get; set; }
     }
 }

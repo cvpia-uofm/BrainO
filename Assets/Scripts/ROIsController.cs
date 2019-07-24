@@ -212,20 +212,27 @@ public class ROIsController : MonoBehaviour
 
     void ScaleColorROI(ROI roi, Transform atlas_region)
     {
+        if(global.Low_rOI_col != Color.white && global.Mid_rOI_col != Color.white && global.High_rOI_col != Color.white)
+        {
+            global.Low_rOI_col = Color.white;
+            global.Mid_rOI_col = Color.blue;
+            global.High_rOI_col = Color.magenta;
+        }
         if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
         {
             atlas_region.localScale = new Vector3(7f, 7f, 7f);
-            ConfigureColor_ROI(atlas_region.gameObject, Color.white);
+            
+            ConfigureColor_ROI(atlas_region.gameObject, global.Low_rOI_col);
         }
         if (ToDouble(roi.Importance_factor) > factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
         {
             atlas_region.localScale = new Vector3(9f, 9f, 9f);
-            ConfigureColor_ROI(atlas_region.gameObject, Color.blue);
+            ConfigureColor_ROI(atlas_region.gameObject, global.Mid_rOI_col);
         }
         if (ToDouble(roi.Importance_factor) >= factor_mid && ToDouble(roi.Importance_factor) <= factor_high)
         {
             atlas_region.localScale = new Vector3(10f, 10f, 10f);
-            ConfigureColor_ROI(atlas_region.gameObject, Color.magenta);
+            ConfigureColor_ROI(atlas_region.gameObject, global.High_rOI_col);
         }
     }
 

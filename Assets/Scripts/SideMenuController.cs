@@ -193,8 +193,8 @@ public class SideMenuController : MonoBehaviour
             count++;
         return count;
     }
-    enum FileBrowserOptions {OpenFile, SaveFile};
-    string[] FileBrowser(ExtensionFilter[] extensions, FileBrowserOptions browserOptions)
+    public enum FileBrowserOptions {OpenFile, SaveFile};
+    public static string[] FileBrowser(ExtensionFilter[] extensions, FileBrowserOptions browserOptions)
     {
         if (browserOptions == FileBrowserOptions.OpenFile)
         {
@@ -314,14 +314,7 @@ public class SideMenuController : MonoBehaviour
 
     public void Print_Figure()
     {
-        var extensions = new[] {
-            new ExtensionFilter("JPEG Files", "jpg" ),
-        };
-        var path = FileBrowser(extensions, FileBrowserOptions.SaveFile);
-        if (string.IsNullOrWhiteSpace(path[0]))
-            return;
-
-        TakeFigure(path[0]);
+        TakeFigure(null);
 
     }
 

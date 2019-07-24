@@ -16,6 +16,7 @@ public class ROI_ListViewController : MonoBehaviour
     public RectTransform ScrollView;
     public Scrollbar ScrollBar;
     public GameObject Region_obj_holder;
+    public RectTransform ListViewPanel;
 
     [Inject]
     readonly IGlobal global;
@@ -29,7 +30,17 @@ public class ROI_ListViewController : MonoBehaviour
     {
         if (global.ROIActivated)
         {
+            Init_ListView();
             Populate_ROI_List_fig(global.Current_rOIs);
+        }
+    }
+
+    void Init_ListView()
+    {
+        var roi_items = ListViewPanel.GetComponentsInChildren<Transform>().Where(a => a.name.Contains("ItemPrefabRoi"));
+        foreach(var roi_item in roi_items)
+        {
+            Destroy(roi_item.gameObject);
         }
     }
 
