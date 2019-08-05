@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Models
 {
-    public class Region : Transform, IRegion
+    public class Region : IRegion
     {
         public string Abbreviation { get; set; }
         public string Region_Name { get; set; }

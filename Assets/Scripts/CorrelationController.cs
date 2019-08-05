@@ -208,16 +208,14 @@ public class CorrelationController : MonoBehaviour
 
         ShowOnlyActivePoints(current_atlas);
         Update_Regionlist(global.Current_Active_Regions);
-
-
     }
 
     IList<Region> CollectActiveRegions(Corelation relation, IList<Region> regions_storage)
     {
-        var pointX = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointX);
-        var pointY = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation == relation.PointY);
+        var pointX = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == relation.PointX.ToUpper());
+        var pointY = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == relation.PointY.ToUpper());
 
-        if (!regions_storage.Contains(pointX))
+        if (regions_storage.Contains(pointX))
             regions_storage.Add(pointX);
         if (!regions_storage.Contains(pointY))
             regions_storage.Add(pointY);

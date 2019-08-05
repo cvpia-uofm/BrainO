@@ -226,15 +226,18 @@ public class RegionsController : MonoBehaviour
     {
         MaterialPropertyBlock props = new MaterialPropertyBlock();
         Func_Area.GetComponent<Renderer>().material.shader = Shader.Find("Standard");
-        if (region.Hemisphere.Equals("left") || region.Abbreviation.StartsWith("l", StringComparison.CurrentCulture))
+        if (global.LH_reg_col == Color.clear && global.RH_reg_col == Color.clear)
         {
             global.LH_reg_col = Color.red;
+            global.RH_reg_col = Color.blue;
+        }
+        if (region.Hemisphere.Equals("left") || region.Abbreviation.StartsWith("l", StringComparison.CurrentCultureIgnoreCase))
+        {
             props.SetColor("_Color", global.LH_reg_col);
             Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
         }
-        if (region.Hemisphere.Equals("right") || region.Abbreviation.StartsWith("r", StringComparison.CurrentCulture))
+        if (region.Hemisphere.Equals("right") || region.Abbreviation.StartsWith("r", StringComparison.CurrentCultureIgnoreCase))
         {
-            global.RH_reg_col = Color.blue;
             props.SetColor("_Color", global.RH_reg_col);
             Func_Area.GetComponent<Renderer>().SetPropertyBlock(props);
         }

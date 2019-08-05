@@ -14,6 +14,7 @@ public class ROIsController : MonoBehaviour
 {
     public GameObject Points_obj;
     public GameObject Correlations_obj;
+    public GameObject Camera_holder;
 
     IEnumerable<Transform> Atlas_regions;
     IEnumerable<TMP_Text> ROIs_factors;
@@ -220,8 +221,7 @@ public class ROIsController : MonoBehaviour
         }
         if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
         {
-            atlas_region.localScale = new Vector3(7f, 7f, 7f);
-            
+            atlas_region.localScale = new Vector3(7f, 7f, 7f);           
             ConfigureColor_ROI(atlas_region.gameObject, global.Low_rOI_col);
         }
         if (ToDouble(roi.Importance_factor) > factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
@@ -247,9 +247,21 @@ public class ROIsController : MonoBehaviour
 
     void Init_ROI(IEnumerable<ROI> reg_of_interests)
     {
+        global.Current_Active_Regions = new List<Region>();
+        Camera_holder.transform.rotation = new Quaternion(0, 0, 0, 0);
+        var reg_lbls = Points_obj.GetComponentsInChildren<TMP_Text>(true);
+        foreach(var reg_lbl in reg_lbls)
+        {
+            reg_lbl.transform.rotation = new Quaternion(0, 180, 0, 0);
+        }
         Atlas_regions = Points_obj.GetComponentsInChildren<Transform>(true);
         ROIs_factors = Points_obj.GetComponentsInChildren<TMP_Text>(true).Where(a => a.name == "ROI_factor").ToList();
         global.Current_rOIs = reg_of_interests.ToList();
+        foreach(var roi_reg in global.Current_rOIs)
+        {
+            var active_reg = global.Current_Region_list.SingleOrDefault(a => a.Abbreviation.ToUpper() == roi_reg.Region.ToUpper());
+            global.Current_Active_Regions.Add(active_reg);
+        }
         foreach(Transform region in Points_obj.transform)
         {
             region.gameObject.SetActive(true);

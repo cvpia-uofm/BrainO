@@ -41,8 +41,13 @@ public class RegionListController : MonoBehaviour
         SideMenuController.OnChangeAtlas += SideMenuController_OnChangeAtlas;
         SideMenuController.RestorePoints += SideMenuController_RestorePoints;
         CorrelationController.Update_Regionlist += CorrelationController_Update_Regionlist;
+        ROIsController.Populate_ROI_ListView += ROIsController_Populate_ROI_ListView;
     }
 
+    void ROIsController_Populate_ROI_ListView()
+    {
+        Populate_Region_list(global.Current_Active_Regions);
+    }
 
     void SideMenuController_RestorePoints(string atlas_name, IEnumerable<Region> regions)
     {

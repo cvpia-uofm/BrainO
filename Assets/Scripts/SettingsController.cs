@@ -54,7 +54,7 @@ public class SettingsController : MonoBehaviour
                         }
                         break;
                     case RH_col_str:
-                        var regs_rh = Points.GetComponentsInChildren<Transform>().Where(a => a.name.StartsWith("L", StringComparison.CurrentCultureIgnoreCase));
+                        var regs_rh = Points.GetComponentsInChildren<Transform>().Where(a => a.name.StartsWith("R", StringComparison.CurrentCultureIgnoreCase));
                         foreach(var reg_rh in regs_rh)
                         {
                             MaterialPropertyBlock props_rh = new MaterialPropertyBlock();
@@ -64,7 +64,7 @@ public class SettingsController : MonoBehaviour
                         }
                         break;
                     case LH_col_str:
-                        var regs_lh = Points.GetComponentsInChildren<Transform>().Where(a => a.name.StartsWith("R", StringComparison.CurrentCultureIgnoreCase));
+                        var regs_lh = Points.GetComponentsInChildren<Transform>().Where(a => a.name.StartsWith("L", StringComparison.CurrentCultureIgnoreCase));
                         foreach (var reg_lh in regs_lh)
                         {
                             MaterialPropertyBlock props_lh = new MaterialPropertyBlock();

@@ -18,7 +18,7 @@ lSP,superiorparietal,-22.8,-60.9,46.3,left,.
 lIP,inferiorparietal,-40,-66.4,27.3,left,.
 lPARA,paracentral,-10,-28.7,56.1,left,.
 lPCG,posteriorcingulate,-7.3,-17.4,35.7,left,.
-rIST,isthmuscingulate,9.8,-44.8,16.9,left,.
+rIST,isthmuscingulate,9.8,-44.8,16.9,right,.
 lPREC,precuneus,-11.6,-57.5,36.7,left,.
 lCUN,cuneus,-8.7,-79.6,18,left,.
 lPERI,pericalcarine,-13.9,-80.6,6,left,.
@@ -32,7 +32,7 @@ lIT,inferiortemporal,-48.9,-34.4,-22.2,left,.
 lTP,temporalpole,-32.8,8.4,-34.8,left,.
 lENT,entorhinal,-25.8,-7.6,-31.6,left,.
 lPHIP,parahippocampal,-24.7,-31.2,-17.4,left,.
-lFUS,fusiform,-35.7,-43.3,-19.7,right,.
+lFUS,fusiform,-35.7,-43.3,-19.7,left,.
 rSF,superiorfrontal,13.4,24.7,42,right,.
 rFP,frontalpole,10.3,61.1,-10,right,.
 rCAC,caudalanteriorcingulate,7.3,18.7,26.3,right,.
@@ -52,7 +52,7 @@ rSP,superiorparietal,22.6,-59.5,48.1,right,.
 rIP,inferiorparietal,42.8,-60.9,28.1,right,.
 rPARAC,paracentral,9.9,-27.4,55.6,right,.
 rPCG,posteriorcingulate,7.6,-17.1,36.2,right,.
-lIST,isthmuscingulate,-8.9,-45.4,17.6,right,.
+lIST,isthmuscingulate,-8.9,-45.4,17.6,left,.
 rPREC,precuneus,11.7,-56.5,37.7,right,.
 rCUN,cuneus,8.7,-80.1,19,right,.
 rPERI,pericalcarine,14,-79.7,6.7,right,.
