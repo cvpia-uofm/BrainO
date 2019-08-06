@@ -1,10 +1,8 @@
 ﻿using Assets.Models;
 using Assets.Models.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -17,6 +15,9 @@ public class ROI_ListViewController : MonoBehaviour
     public Scrollbar ScrollBar;
     public GameObject Region_obj_holder;
     public RectTransform ListViewPanel;
+    public Text Legend_txt_high;
+    public Text Legend_txt_mid;
+    public Text Legend_txt_low;
 
     [Inject]
     readonly IGlobal global;
@@ -24,6 +25,14 @@ public class ROI_ListViewController : MonoBehaviour
     void Awake()
     {
         ROIsController.Populate_ROI_ListView += ROIsController_Populate_ROI_ListView;
+        ROIsController.UpdateROIthrLgd += ROIsController_UpdateROIthrLgd;
+    }
+
+    void ROIsController_UpdateROIthrLgd(double low, double mid, double high)
+    {
+        Legend_txt_high.text = mid.ToString() + " - " + high.ToString();
+        Legend_txt_mid.text = ((mid + low) / 2).ToString() + " - " + mid.ToString();
+        Legend_txt_low.text = low.ToString() + " < " + mid.ToString();
     }
 
     void ROIsController_Populate_ROI_ListView()
@@ -53,11 +62,11 @@ public class ROI_ListViewController : MonoBehaviour
             var factor = item.GetComponentsInChildren<Text>().Single(a => a.name == "Factor");
             var legend = item.GetComponentsInChildren<Image>().Single(a => a.name == "Legend");
 
-            region.text = roi.Region.ToUpper();
+            region.text = roi.Region;
             factor.text = roi.Importance_factor;
 
             MaterialPropertyBlock properties = new MaterialPropertyBlock();
-            Region_obj_holder.GetComponentsInChildren<Transform>().Single(a => a.name.ToUpper() == roi.Region.ToUpper()).GetComponent<Renderer>().GetPropertyBlock(properties);
+            Region_obj_holder.GetComponentsInChildren<Transform>().Single(a => a.name.Equals(roi.Region, StringComparison.CurrentCultureIgnoreCase)).GetComponent<Renderer>().GetPropertyBlock(properties);
             legend.GetComponent<Image>().color = properties.GetColor("_Color");
             item.transform.SetParent(Content.transform);
         }

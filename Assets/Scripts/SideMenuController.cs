@@ -28,6 +28,7 @@ public class SideMenuController : MonoBehaviour
     public Toggle Low_thr_toggle;
     public Toggle Mid_thr_toggle;
     public Toggle High_thr_toggle;
+    public Toggle ROI_Score_label;
     public Button Load_Correlation_btn;
     public Button Load_rOI_btn;
     public GameObject Right_Panel_Weight;
@@ -57,10 +58,12 @@ public class SideMenuController : MonoBehaviour
     public delegate void OnFigureAction(string path);
     public static event OnFigureAction TakeFigure;
 
-
-
     public delegate void OnEscapleAction(string atlas_name, IEnumerable<Region> regions);
     public static event OnEscapleAction RestorePoints;
+
+    public delegate void OnLabelActivate(bool active);
+    public static event OnLabelActivate OnLabelActive;
+    public static event OnLabelActivate OnLabelActiveROI;
 
     [Inject]
     readonly IAtlas atlas;
@@ -158,17 +161,9 @@ public class SideMenuController : MonoBehaviour
             Right_Panel_ROI.SetActive(false);
             Load_Correlation_btn.interactable = true;
             Load_rOI_btn.interactable = true;
+            ROI_Score_label.gameObject.SetActive(false);
             RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
-            //if (global.CorrelationActivated || global.ROIActivated)
-            //{
-            //    global.CorrelationActivated = false;
-            //    global.ROIActivated = false;
-            //    Right_Panel_Weight.SetActive(false);
-            //    RestorePoints(Current_Atlas, global.Atlas_Regions_dict_index[AtlasDropDown.value]);
-
-            //}
         }
-
         if (IsMouseOver())
         {
             global.MouseOverUI = true;
@@ -220,6 +215,10 @@ public class SideMenuController : MonoBehaviour
 
     public void Brainstem_Activation(bool active) => Brainstem.SetActive(active);
 
+    public void Labels_Activation(bool active) => OnLabelActive(active);
+
+    public void Labels_ROI_Score_Activation(bool active) => OnLabelActiveROI(active);
+
     public void Load_Correlation()
     {
         var extensions = new[] {
@@ -239,7 +238,6 @@ public class SideMenuController : MonoBehaviour
 
             if ((Corelations as List<Corelation>).Count != 0)
             {
-
                 global.CorrelationActivated = true;
 
                 StartCoroutine(OnPlotCorrelation(Corelations, Current_Atlas));
@@ -281,6 +279,7 @@ public class SideMenuController : MonoBehaviour
                 StartCoroutine(OnPlotROI(ROIs, Current_Atlas));
 
                 Right_Panel_ROI.SetActive(true);
+                ROI_Score_label.gameObject.SetActive(true);
             }
 
         }

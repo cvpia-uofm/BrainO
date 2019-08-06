@@ -26,7 +26,7 @@ public class BrainController : MonoBehaviour
     void Update()
     {
         //Rotation();
-        //Scaling(); 
+        Scaling(); 
     }
 
     void Scaling()
@@ -41,7 +41,7 @@ public class BrainController : MonoBehaviour
 
         if (Input.GetAxis("Mouse ScrollWheel") < 0f && Input.GetKey(KeyCode.LeftControl))
         {
-            if (!gameObject.transform.localScale.Equals(new Vector3(40, 40, 40)))
+            if (!gameObject.transform.localScale.Equals(new Vector3(0, 0, 0)))
             {
                 gameObject.transform.localScale -= new Vector3(1f, 1f, 1f);
             }

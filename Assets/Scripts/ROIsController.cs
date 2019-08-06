@@ -28,6 +28,7 @@ public class ROIsController : MonoBehaviour
 
     public delegate void OnUpdateROIthr(double low, double mid, double high);
     public static event OnUpdateROIthr UpdateROIthr;
+    public static event OnUpdateROIthr UpdateROIthrLgd;
 
     public delegate void OnFinishPlotROI();
     public static event OnFinishPlotROI Populate_ROI_ListView;
@@ -43,6 +44,16 @@ public class ROIsController : MonoBehaviour
         RegionsController.RestoreROI += PointsController_RestoreROI;
         RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
         RegionListController.OnFocus_rOI += RegionListController_OnFocus_rOI;
+        SideMenuController.OnLabelActiveROI += SideMenuController_OnLabelActiveROI;
+    }
+
+    void SideMenuController_OnLabelActiveROI(bool active)
+    {
+        var roi_scores = Points_obj.GetComponentsInChildren<Transform>(true).Where(a => a.name.Equals("ROI_factor"));
+        foreach(var roi_score in roi_scores)
+        {
+            roi_score.gameObject.SetActive(active);
+        }
     }
 
     void RegionListController_OnFocus_rOI(ROI sel_rOI, ROI prev_sel_rOi)
@@ -158,6 +169,7 @@ public class ROIsController : MonoBehaviour
                 }
             }
         }
+        UpdateROIthrLgd(low_thr, mid_thr, high_thr);
     } 
     #endregion
 

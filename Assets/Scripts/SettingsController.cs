@@ -25,6 +25,7 @@ public class SettingsController : MonoBehaviour
     public GameObject Left_Hemp;
     public GameObject Right_Hemp;
 
+
     [Inject]
     readonly IGlobal global;
 
@@ -47,7 +48,7 @@ public class SettingsController : MonoBehaviour
                         global.Back_col = ColorPicker.CurrentColor;
                         break;
                     case Lbl_col_str:
-                        var reg_lbls = Points.GetComponentsInChildren<TMP_Text>();
+                        var reg_lbls = Points.GetComponentsInChildren<TMP_Text>(true);
                         foreach (var reg_lbl in reg_lbls)
                         {
                             reg_lbl.color = ColorPicker.CurrentColor;

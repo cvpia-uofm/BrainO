@@ -40,7 +40,18 @@ public class RegionsController : MonoBehaviour
         CorrelationController.OnPathAction += CorrelationController_OnPathAction;
         RegionListController.OnFocusPoint += RegionListController_OnFocusPoint;
         RegionListController.RestorePreviousStateofRegion += RegionListController_RestorePreviousStateofRegion;
+        SideMenuController.OnLabelActive += SideMenuController_OnLabelActive;
         Init_Atlas();
+    }
+
+    void SideMenuController_OnLabelActive(bool active)
+    {
+        var labels = transform.GetComponentsInChildren<Transform>(true).Where(a => a.name.Equals("Abbreviation", StringComparison.CurrentCultureIgnoreCase));
+
+        foreach(var lbl in labels)
+        {
+            lbl.gameObject.SetActive(active);
+        }
     }
 
     void RegionListController_RestorePreviousStateofRegion(string region_name)

@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -40,6 +41,7 @@ public class CameraController : MonoBehaviour
 
     [Inject]
     readonly IGlobal global;
+    readonly float rotateSpeed = 20;
 
     void Awake()
     {
@@ -53,6 +55,19 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
+        {
+            if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl))
+            {
+                float rotateX = Input.GetAxis("Mouse X") * rotateSpeed;
+                float rotateY = Input.GetAxis("Mouse Y") * rotateSpeed;
+
+                transform.position = new Vector3(transform.localPosition.x + rotateX, transform.localPosition.y + rotateY, 70f);
+            }
+
+
+
+        }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             Rotate_Camera(0, speed * Time.deltaTime);
@@ -72,15 +87,26 @@ public class CameraController : MonoBehaviour
         if (Input.GetKey(KeyCode.Escape))
         {
             CamaeraDefaultRotation();
+            CameraDefaultPosition();
             ActivateView("default");
             Cancel();
         }
     }
 
+    void CameraDefaultPosition()
+    {
+        transform.localPosition = new Vector3(30f, 70f, 70f);
+    }
+
     void CamaeraDefaultRotation()
     {
         transform.rotation = new Quaternion(0, 0, 0, 0);
-        OnBrainRotate(0, 0);
+        var lbls = Points_obj_holder.GetComponentsInChildren<TMP_Text>(true);
+        foreach(var lbl in lbls)
+        {
+            lbl.transform.localRotation = new Quaternion(0, 180, 0, 0);
+        }
+        
     }
 
     void Rotate_Camera(float X_rot, float Y_rot)
@@ -91,10 +117,6 @@ public class CameraController : MonoBehaviour
 
     void SideMenuController_TakeFigure(string path)
     {
-        //Camera_fig.targetTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
-        //path_to_save = path;
-        //ReadyToTakeScreenShot = true;
-        //Status_lbl.gameObject.SetActive(true);
         TitleCanvas.gameObject.SetActive(false);
         ListViewCanvas.gameObject.SetActive(false);
         CameraCtrlPanel.gameObject.SetActive(false);
@@ -107,30 +129,9 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void OnPostRender()
-    {
-        //SnapScreenshot();
-    }
 
     public void SnapScreenshot()
     {
-        //if (ReadyToTakeScreenShot)
-        //{
-        //    ReadyToTakeScreenShot = false;
-
-        //    RenderTexture renderTexture = Camera_fig.targetTexture;
-        //    Texture2D renderResult = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
-        //    Rect rect = new Rect(0, 0, renderTexture.width, renderTexture.height);
-        //    renderResult.ReadPixels(rect, 0, 0);
-
-        //    byte[] vs = renderResult.EncodeToJPG();
-
-        //    System.IO.File.WriteAllBytes(path_to_save, vs);
-
-        //    RenderTexture.ReleaseTemporary(renderTexture);
-        //    Camera_fig.targetTexture = null;
-
-        //}
         var extensions = new[] {
             new ExtensionFilter("JPEG Files", "jpg" ),
         };
@@ -193,11 +194,28 @@ public class CameraController : MonoBehaviour
 
     void Toggle_Region_obj(string hemph, bool state)
     {
-        var reg_hemph = Points_obj_holder.GetComponentsInChildren<Transform>(true).Where(a => a.name.StartsWith(hemph, StringComparison.CurrentCultureIgnoreCase));
-        
-        foreach(Transform reg in reg_hemph)
+        if (!global.CorrelationActivated)
         {
-            reg.gameObject.SetActive(state);
+            var reg_hemph = Points_obj_holder.GetComponentsInChildren<Transform>(true).
+                    Where(a => a.name.StartsWith(hemph, StringComparison.CurrentCultureIgnoreCase) && a.name != "ROI_factor");
+            if (!global.ROIActivated)
+            {
+                foreach (Transform reg in reg_hemph)
+                {
+                    reg.gameObject.SetActive(state);
+                }
+            }
+            else
+            {
+                foreach (var roi in global.Current_rOIs)
+                {
+                    Transform reg_roi = reg_hemph.SingleOrDefault(a => a.name.Equals(roi.Region, StringComparison.CurrentCultureIgnoreCase));
+                    if (reg_roi != null)
+                    {
+                        reg_roi.gameObject.SetActive(state);
+                    }
+                }
+            } 
         }
     }
 }
