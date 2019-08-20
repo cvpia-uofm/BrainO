@@ -33,7 +33,16 @@ public class ROIsController : MonoBehaviour
     public delegate void OnFinishPlotROI();
     public static event OnFinishPlotROI Populate_ROI_ListView;
 
-   
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape) && global.ROIActivated)
+        {
+            if (!global.DoubleEscape_ROI_Deactivation)
+                global.DoubleEscape_ROI_Deactivation = true;
+            else
+                global.DoubleEscape_ROI_Deactivation = false;
+        }   
+    }
 
     void Awake()
     {
@@ -231,12 +240,12 @@ public class ROIsController : MonoBehaviour
             global.Mid_rOI_col = Color.blue;
             global.High_rOI_col = Color.magenta;
         }
-        if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) <= factor_midlow)
+        if (ToDouble(roi.Importance_factor) >= factor_low && ToDouble(roi.Importance_factor) < factor_midlow)
         {
             atlas_region.localScale = new Vector3(7f, 7f, 7f);           
             ConfigureColor_ROI(atlas_region.gameObject, global.Low_rOI_col);
         }
-        if (ToDouble(roi.Importance_factor) > factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
+        if (ToDouble(roi.Importance_factor) >= factor_midlow && ToDouble(roi.Importance_factor) < factor_mid)
         {
             atlas_region.localScale = new Vector3(9f, 9f, 9f);
             ConfigureColor_ROI(atlas_region.gameObject, global.Mid_rOI_col);

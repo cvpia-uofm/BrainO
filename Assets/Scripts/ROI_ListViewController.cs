@@ -30,9 +30,11 @@ public class ROI_ListViewController : MonoBehaviour
 
     void ROIsController_UpdateROIthrLgd(double low, double mid, double high)
     {
-        Legend_txt_high.text = mid.ToString() + " - " + high.ToString();
-        Legend_txt_mid.text = ((mid + low) / 2).ToString() + " - " + mid.ToString();
-        Legend_txt_low.text = low.ToString() + " < " + mid.ToString();
+        Legend_txt_high.text = mid.ToString() + " ≤ thr ≤ " + high.ToString();
+        Legend_txt_mid.text = ((mid + low) / 2).ToString() + " ≤ thr < " + mid.ToString();
+        Legend_txt_low.text = low.ToString() + " ≤ thr < " + ((mid + low) / 2).ToString();
+        Init_ListView();
+        Populate_ROI_List_fig(global.Current_rOIs);
     }
 
     void ROIsController_Populate_ROI_ListView()

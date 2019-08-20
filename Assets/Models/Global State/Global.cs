@@ -14,7 +14,7 @@ namespace Assets.Models.Global_State
         public bool ROIActivated { get; set; }
         public bool AnyRegionSelected { get; set; }
         public bool Settings_Activated { get; set; }
-
+        public bool DoubleEscape_ROI_Deactivation { get; set; }
         public string Current_atlas { get; set; }
 
         public IDictionary<int, IEnumerable<Region>> Atlas_Regions_dict_index { get; set; }

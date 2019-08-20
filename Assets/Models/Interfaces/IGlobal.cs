@@ -9,6 +9,7 @@ namespace Assets.Models.Interfaces
         bool ROIActivated { get; set; }
         bool AnyRegionSelected { get; set; }
         bool Settings_Activated { get; set; }
+        bool DoubleEscape_ROI_Deactivation { get; set; }
 
         string Current_atlas { get; set; }
         IDictionary<int, IEnumerable<Region>> Atlas_Regions_dict_index { get; set; }

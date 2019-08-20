@@ -152,6 +152,10 @@ public class SideMenuController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.Escape) && global.DoubleEscape_ROI_Deactivation && global.ROIActivated)  
+        {
+            return;
+        }
         if (Input.GetKey(KeyCode.Escape))
         {
             global.CorrelationActivated = false;
@@ -274,6 +278,7 @@ public class SideMenuController : MonoBehaviour
             if ((ROIs as List<ROI>).Count != 0)
             {
                 global.ROIActivated = true;
+                global.DoubleEscape_ROI_Deactivation = false;
 
                 Load_Correlation_btn.interactable = false;
                 StartCoroutine(OnPlotROI(ROIs, Current_Atlas));

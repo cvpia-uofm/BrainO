@@ -88,6 +88,12 @@ public class CameraController : MonoBehaviour
         {
             CamaeraDefaultRotation();
             CameraDefaultPosition();
+            if (global.ROIActivated && !global.DoubleEscape_ROI_Deactivation)
+            {
+                Toggle_Region_obj("L", true);
+                Toggle_Region_obj("R", true);
+                return;
+            }
             ActivateView("default");
             Cancel();
         }
