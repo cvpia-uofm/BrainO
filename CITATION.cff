@@ -1,0 +1,21 @@
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Moinuddin
+    given-names: "Kazi Ashraf"
+  -
+    family-names: Mohammed
+    given-names: Yeasin
+  -
+    family-names: Bidelman
+    given-names: "Gavin M"
+cff-version: "1.0.3"
+date-released: 2019-09-09
+doi: "10.5281/zenodo.3403183 "
+license: "GNU General Public License v3.0"
+message: "If you use this software, please cite it using this format."
+repository-code: "https://github.com/cvpia-uofm/BrainO"
+title: BrainO
+version: "0.11"
+...
